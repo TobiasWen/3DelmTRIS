@@ -1,0 +1,6 @@
+{
+    "[elm]": {
+        "editor.formatOnSave": true,
+        "editor.formatOnSaveTimeout": 1500
+    }
+}
