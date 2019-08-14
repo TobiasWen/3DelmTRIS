@@ -1,4 +1,4 @@
-module Tetroids exposing (Tetroid)
+module Tetroids exposing (Tetroid, createBlueTetroid, createGreenTetroid, createOrangeTetroid, createPinkTetroid, createYellowTetroid, tetroids)
 
 import Grid exposing (Color, Grid, Position)
 

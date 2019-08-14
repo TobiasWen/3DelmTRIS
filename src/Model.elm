@@ -2,7 +2,7 @@ module Model exposing (Model, initialModel)
 
 import Dimensions exposing (WorldDimensions)
 import Grid exposing (Cell, Color, Grid, Position)
-import Tetroids exposing (Tetroid)
+import Tetroids exposing (..)
 
 
 
@@ -24,13 +24,20 @@ type alias Model =
     }
 
 
-cell : Cell
-cell =
-    { color = { red = 255, green = 255, blue = 255 }
-    , position = { x = 1.0, y = 2.0, z = 3.0 }
+initialWorldDimensions : WorldDimensions
+initialWorldDimensions =
+    { width = 7
+    , height = 14
+    , depth = 7
     }
 
 
 initialModel : Model
 initialModel =
-    [ cell ]
+    { dimensions = initialWorldDimensions
+    , activeTetroid = createBlueTetroid
+    , upcomingTetroid = createGreenTetroid
+    , grid = []
+    , gameState = Running
+    , fastFallDown = False
+    }
