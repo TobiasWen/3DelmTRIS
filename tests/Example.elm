@@ -7,12 +7,13 @@ import Test exposing (..)
 
 suite : Test
 suite =
-    describe "MyExampleTest"
+    describe "The String module"
         [ describe "String.reverse"
-            [ test "reverses a tuple of known strings" <|
+            -- Expect.equal is designed to be used in pipeline style, like this.
+            [ test "reverses a known string" <|
                 \_ ->
-                    ("ABCDEFG", "XYZ")
-                        |> (String.reverse
+                    "ABCDEFG"
+                        |> String.reverse
                         |> Expect.equal "GFEDCBA"
 
             -- fuzz runs the test 100 times with randomly-generated inputs!

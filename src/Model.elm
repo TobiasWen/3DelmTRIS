@@ -1,15 +1,27 @@
 module Model exposing (Model, initialModel)
 
+import Dimensions exposing (WorldDimensions)
 import Grid exposing (Cell, Color, Grid, Position)
+import Tetroids exposing (Tetroid)
 
 
 
--- Current model and initialModel are only placeholders and will
--- be filled with correct data asap.
+-- Work in Progress Model
+
+
+type GameState
+    = Running
+    | Stopped
 
 
 type alias Model =
-    Grid
+    { dimensions : WorldDimensions
+    , activeTetroid : Tetroid
+    , upcomingTetroid : Tetroid
+    , grid : Grid
+    , gameState : GameState
+    , fastFallDown : Bool
+    }
 
 
 cell : Cell
