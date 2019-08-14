@@ -1,16 +1,14 @@
-module Update exposing (Msg(..), update)
+module Update exposing (update)
 
+import Messages exposing (Msg(..))
 import Model exposing (Model)
 
 
-
--- Just placeholder. Will be placed in Messages.elm asap.
-
-
-type Msg
-    = NoOp
-
-
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    model
+    case msg of
+        Start tetroid ->
+            ( { model | upcomingTetroid = Just tetroid }, Cmd.none )
+
+        _ ->
+            ( model, Cmd.none )

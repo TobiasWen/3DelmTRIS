@@ -2,11 +2,12 @@ module Messages exposing (Msg(..))
 
 import Movement exposing (Direction)
 import Rotation exposing (Axis)
+import Tetroids exposing (Tetroid)
 
 
 type Msg
     = NoOp
-    | Start
+    | Start Tetroid
     | Stop
     | Tick Float
     | FastFallDown Bool

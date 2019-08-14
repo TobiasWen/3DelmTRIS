@@ -1,6 +1,7 @@
-module Tetroids exposing (Tetroid, createBlueTetroid, createGreenTetroid, createOrangeTetroid, createPinkTetroid, createYellowTetroid, tetroids)
+module Tetroids exposing (Tetroid, createBlueTetroid, createGreenTetroid, createOrangeTetroid, createPinkTetroid, createYellowTetroid, tetroidGenerator, tetroids)
 
 import Grid exposing (Color, Grid, Position)
+import Random exposing (..)
 
 
 
@@ -44,6 +45,16 @@ pink =
 
 
 -- Tetroid creation
+
+
+tetroidGenerator : Generator Tetroid
+tetroidGenerator =
+    case tetroids of
+        x :: xs ->
+            Random.uniform x xs
+
+        [] ->
+            Random.uniform createBlueTetroid []
 
 
 createTetroid : Color -> Position -> List Position -> Tetroid

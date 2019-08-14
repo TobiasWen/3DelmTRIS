@@ -2,6 +2,8 @@ module Model exposing (Model, initialModel)
 
 import Dimensions exposing (WorldDimensions)
 import Grid exposing (Cell, Color, Grid, Position)
+import Messages exposing (Msg(..))
+import Random exposing (..)
 import Tetroids exposing (..)
 
 
@@ -16,8 +18,8 @@ type GameState
 
 type alias Model =
     { dimensions : WorldDimensions
-    , activeTetroid : Tetroid
-    , upcomingTetroid : Tetroid
+    , activeTetroid : Maybe Tetroid
+    , upcomingTetroid : Maybe Tetroid
     , grid : Grid
     , gameState : GameState
     , fastFallDown : Bool
@@ -32,12 +34,14 @@ initialWorldDimensions =
     }
 
 
-initialModel : Model
+initialModel : ( Model, Cmd Msg )
 initialModel =
-    { dimensions = initialWorldDimensions
-    , activeTetroid = createBlueTetroid
-    , upcomingTetroid = createGreenTetroid
-    , grid = []
-    , gameState = Running
-    , fastFallDown = False
-    }
+    ( { dimensions = initialWorldDimensions
+      , activeTetroid = Nothing
+      , upcomingTetroid = Nothing
+      , grid = []
+      , gameState = Running
+      , fastFallDown = False
+      }
+    , Random.generate Start tetroidGenerator
+    )
