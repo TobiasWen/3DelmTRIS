@@ -4,7 +4,7 @@ module Grid exposing (Cell, Color, Grid, Position, rgb)
 
 
 type alias Color =
-    { red : Int, green : Int, blue : Int }
+    { r : Int, g : Int, b : Int }
 
 
 
@@ -12,7 +12,7 @@ type alias Color =
 
 
 type alias Position =
-    { x : Float, y : Float, z : Float }
+    { x : Int, y : Int, z : Int }
 
 
 
@@ -35,4 +35,4 @@ type alias Grid =
 
 rgb : Int -> Int -> Int -> Color
 rgb red green blue =
-    { red = red, green = green, blue = blue }
+    { r = red, g = green, b = blue }
