@@ -1,4 +1,4 @@
-module Grid exposing (Cell, Color, Grid, Position, rgb)
+module Grid exposing (Cell, Color, Grid, Position, setPosition)
 
 -- The color of a cell
 
@@ -13,6 +13,11 @@ type alias Color =
 
 type alias Position =
     { x : Int, y : Int, z : Int }
+
+
+setPosition : Int -> Int -> Int -> Position -> Position
+setPosition x y z vec =
+    { vec | x = x, y = y, z = z }
 
 
 
@@ -31,8 +36,3 @@ type alias Cell =
 
 type alias Grid =
     List Cell
-
-
-rgb : Int -> Int -> Int -> Color
-rgb red green blue =
-    { r = red, g = green, b = blue }

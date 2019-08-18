@@ -1,4 +1,4 @@
-module Tetroids exposing (Tetroid, createBlueTetroid, createGreenTetroid, createOrangeTetroid, createPinkTetroid, createYellowTetroid, tetroidGenerator, tetroids)
+module Tetroids exposing (Tetroid, blue, createBlueTetroid, createGreenTetroid, createOrangeTetroid, createPinkTetroid, createTetroid, createYellowTetroid, green, orange, pink, tetroidGenerator, tetroids, yellow)
 
 import Grid exposing (Color, Grid, Position)
 import Random exposing (..)
@@ -138,7 +138,3 @@ tetroids =
     , createPinkTetroid
     , createYellowTetroid
     ]
-
-
-
--- TOOD: In the following will be placed a collection of pre-defined tetroids which are based on the original tetris game.
