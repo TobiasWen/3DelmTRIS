@@ -64,17 +64,33 @@ isCollidingWithFloor tetroid dim =
     List.any (\cell -> cell.position.y >= dim.height - 1) tetroid.grid
 
 
-moveTetroid : Tetroid -> Direction -> Tetroid
-moveTetroid tetroid dir =
+moveTetroid : Tetroid -> Direction -> WorldDimensions -> Tetroid
+moveTetroid tetroid dir dimensions =
     case dir of
         Up ->
-            translateTetroid tetroid { x = 0, y = 0, z = 1 }
+            if List.any (\cell -> cell.position.z >= dimensions.depth) tetroid.grid then
+                tetroid
+
+            else
+                translateTetroid tetroid { x = 0, y = 0, z = 1 }
 
         Down ->
-            translateTetroid tetroid { x = 0, y = 0, z = -1 }
+            if List.any (\cell -> cell.position.z <= 0) tetroid.grid then
+                tetroid
+
+            else
+                translateTetroid tetroid { x = 0, y = 0, z = -1 }
 
         Left ->
-            translateTetroid tetroid { x = -1, y = 0, z = 0 }
+            if List.any (\cell -> cell.position.x <= 0) tetroid.grid then
+                tetroid
+
+            else
+                translateTetroid tetroid { x = -1, y = 0, z = 0 }
 
         Right ->
-            translateTetroid tetroid { x = 1, y = 0, z = 0 }
+            if List.any (\cell -> cell.position.x >= dimensions.width) tetroid.grid then
+                tetroid
+
+            else
+                translateTetroid tetroid { x = 1, y = 0, z = 0 }

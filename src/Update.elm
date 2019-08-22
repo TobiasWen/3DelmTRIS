@@ -79,16 +79,16 @@ handleKeyInput model key =
                     { model | fastFallDown = False }
 
                 ArrowDownKeyDown ->
-                    { model | activeTetroid = Just (moveTetroid tetroid Down) }
+                    { model | activeTetroid = Just (moveTetroid tetroid Down model.dimensions) }
 
                 ArrowUpKeyDown ->
-                    { model | activeTetroid = Just (moveTetroid tetroid Up) }
+                    { model | activeTetroid = Just (moveTetroid tetroid Up model.dimensions) }
 
                 ArrowLeftKeyDown ->
-                    { model | activeTetroid = Just (moveTetroid tetroid Left) }
+                    { model | activeTetroid = Just (moveTetroid tetroid Left model.dimensions) }
 
                 ArrowRightKeyDown ->
-                    { model | activeTetroid = Just (moveTetroid tetroid Right) }
+                    { model | activeTetroid = Just (moveTetroid tetroid Right model.dimensions) }
 
                 _ ->
                     model
