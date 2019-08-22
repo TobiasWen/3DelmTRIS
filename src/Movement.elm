@@ -1,4 +1,4 @@
-module Movement exposing (Direction(..), fallDown, moveTetroidByOffsetFromPosition, spawnTetroid, translate, translateCell, translateTetroid)
+module Movement exposing (Direction(..), fallDown, moveTetroid, moveTetroidByOffsetFromPosition, spawnTetroid, translate, translateCell, translateTetroid)
 
 import Dimensions exposing (WorldDimensions, calculateTopCenter)
 import Grid exposing (Cell, Position)
@@ -56,3 +56,19 @@ spawnTetroid tetroid dimensions =
 fallDown : Tetroid -> Tetroid
 fallDown tetroid =
     translateTetroid tetroid { x = 0, y = 1, z = 0 }
+
+
+moveTetroid : Tetroid -> Direction -> Tetroid
+moveTetroid tetroid dir =
+    case dir of
+        Up ->
+            translateTetroid tetroid { x = 0, y = 0, z = 1 }
+
+        Down ->
+            translateTetroid tetroid { x = 0, y = 0, z = -1 }
+
+        Left ->
+            translateTetroid tetroid { x = -1, y = 0, z = 0 }
+
+        Right ->
+            translateTetroid tetroid { x = 1, y = 0, z = 0 }

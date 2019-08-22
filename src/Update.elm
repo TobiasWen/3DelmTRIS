@@ -4,7 +4,7 @@ import Dimensions exposing (WorldDimensions, calculateTopCenter)
 import Input exposing (Key(..))
 import Messages exposing (Msg(..))
 import Model exposing (GameState(..), Model)
-import Movement exposing (fallDown, spawnTetroid)
+import Movement exposing (Direction(..), fallDown, moveTetroid, spawnTetroid)
 import Random exposing (..)
 import Tetroids exposing (Tetroid, tetroidGenerator)
 
@@ -69,12 +69,29 @@ noAction model =
 
 handleKeyInput : Model -> Key -> Model
 handleKeyInput model key =
-    case key of
-        SpaceKeyDown ->
-            { model | fastFallDown = True }
+    case model.activeTetroid of
+        Just tetroid ->
+            case key of
+                SpaceKeyDown ->
+                    { model | fastFallDown = True }
 
-        SpaceKeyUp ->
-            { model | fastFallDown = False }
+                SpaceKeyUp ->
+                    { model | fastFallDown = False }
 
-        _ ->
+                ArrowDownKeyDown ->
+                    { model | activeTetroid = Just (moveTetroid tetroid Down) }
+
+                ArrowUpKeyDown ->
+                    { model | activeTetroid = Just (moveTetroid tetroid Up) }
+
+                ArrowLeftKeyDown ->
+                    { model | activeTetroid = Just (moveTetroid tetroid Left) }
+
+                ArrowRightKeyDown ->
+                    { model | activeTetroid = Just (moveTetroid tetroid Right) }
+
+                _ ->
+                    model
+
+        Nothing ->
             model
