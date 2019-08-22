@@ -76,4 +76,18 @@ suite =
                     spawnTetroid createOrangeTetroid worldDimensions
                         |> Expect.equal orangeTetroidInTopCenter
             ]
+        , describe "Movement.fallDown"
+            [ test "Let the tetroid fall down one block" <|
+                \_ ->
+                    fallDown setupTetroid
+                        |> Expect.equal
+                            (createTetroid blue
+                                { x = 1, y = 1, z = 0 }
+                                [ Position 0 1 0
+                                , Position 1 1 0
+                                , Position 2 1 0
+                                , Position 3 1 0
+                                ]
+                            )
+            ]
         ]

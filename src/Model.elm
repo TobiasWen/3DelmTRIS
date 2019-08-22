@@ -1,7 +1,8 @@
-module Model exposing (Model, initialModel)
+module Model exposing (GameState(..), Model, getTickRate, initialModel)
 
 import Dimensions exposing (WorldDimensions)
 import Grid exposing (Cell, Color, Grid, Position)
+import Json.Decode
 import Messages exposing (Msg(..))
 import Random exposing (..)
 import Tetroids exposing (..)
@@ -23,6 +24,8 @@ type alias Model =
     , grid : Grid
     , gameState : GameState
     , fastFallDown : Bool
+    , tickRateMs : Float
+    , counter : Int
     }
 
 
@@ -40,8 +43,19 @@ initialModel =
       , activeTetroid = Nothing
       , upcomingTetroid = Nothing
       , grid = []
-      , gameState = Running
+      , gameState = Stopped
       , fastFallDown = False
+      , tickRateMs = 1000
+      , counter = 0
       }
     , Random.generate Start tetroidGenerator
     )
+
+
+getTickRate : Model -> Float
+getTickRate model =
+    if model.fastFallDown then
+        model.tickRateMs / 10
+
+    else
+        model.tickRateMs
