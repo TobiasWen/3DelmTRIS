@@ -1,7 +1,8 @@
-module Movement exposing (Direction(..), fallDown, moveTetroid, moveTetroidByOffsetFromPosition, spawnTetroid, translate, translateCell, translateTetroid)
+module Movement exposing (Direction(..), fallDown, isCollidingWithFloor, moveTetroid, moveTetroidByOffsetFromPosition, spawnTetroid, translate, translateCell, translateTetroid)
 
 import Dimensions exposing (WorldDimensions, calculateTopCenter)
 import Grid exposing (Cell, Position)
+import List
 import Tetroids exposing (Tetroid)
 
 
@@ -56,6 +57,11 @@ spawnTetroid tetroid dimensions =
 fallDown : Tetroid -> Tetroid
 fallDown tetroid =
     translateTetroid tetroid { x = 0, y = 1, z = 0 }
+
+
+isCollidingWithFloor : Tetroid -> WorldDimensions -> Bool
+isCollidingWithFloor tetroid dim =
+    List.any (\cell -> cell.position.y >= dim.height - 1) tetroid.grid
 
 
 moveTetroid : Tetroid -> Direction -> Tetroid

@@ -1,4 +1,4 @@
-module Grid exposing (Cell, Color, Grid, Position, setPosition)
+module Grid exposing (Cell, Color, Grid, Position, mergeGrids, setPosition)
 
 -- The color of a cell
 
@@ -36,3 +36,12 @@ type alias Cell =
 
 type alias Grid =
     List Cell
+
+
+
+-- Merges 2 Grids into one. Could be extended by some checks
+
+
+mergeGrids : Grid -> Grid -> Grid
+mergeGrids g1 g2 =
+    List.concat [ g1, g2 ]

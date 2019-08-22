@@ -1,10 +1,11 @@
 module Update exposing (update)
 
 import Dimensions exposing (WorldDimensions, calculateTopCenter)
+import Grid exposing (mergeGrids)
 import Input exposing (Key(..))
 import Messages exposing (Msg(..))
 import Model exposing (GameState(..), Model)
-import Movement exposing (Direction(..), fallDown, moveTetroid, spawnTetroid)
+import Movement exposing (Direction(..), fallDown, isCollidingWithFloor, moveTetroid, spawnTetroid)
 import Random exposing (..)
 import Tetroids exposing (Tetroid, tetroidGenerator)
 
@@ -25,7 +26,7 @@ update msg model =
             ( handleKeyInput model key, Cmd.none )
 
         _ ->
-            noAction model
+            ( model, Cmd.none )
 
 
 startGame : Model -> Tetroid -> Model
@@ -56,15 +57,14 @@ checkForCollision : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 checkForCollision ( model, cmd ) =
     case model.activeTetroid of
         Just tetroid ->
-            ( { model | activeTetroid = Just (fallDown tetroid) }, cmd )
+            if isCollidingWithFloor tetroid model.dimensions then
+                ( { model | grid = mergeGrids model.grid tetroid.grid, activeTetroid = Nothing }, cmd )
+
+            else
+                ( { model | activeTetroid = Just (fallDown tetroid) }, cmd )
 
         Nothing ->
-            noAction model
-
-
-noAction : Model -> ( Model, Cmd Msg )
-noAction model =
-    ( model, Cmd.none )
+            ( model, Cmd.none )
 
 
 handleKeyInput : Model -> Key -> Model
