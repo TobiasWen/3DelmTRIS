@@ -1,7 +1,7 @@
 module Messages exposing (Msg(..))
 
+import Grid exposing (Direction)
 import Input exposing (Key)
-import Movement exposing (Direction)
 import Rotation exposing (Axis)
 import Tetroids exposing (Tetroid)
 

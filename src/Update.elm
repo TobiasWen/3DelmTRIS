@@ -1,11 +1,11 @@
 module Update exposing (update)
 
 import Dimensions exposing (WorldDimensions, calculateTopCenter)
-import Grid exposing (mergeGrids)
+import Grid exposing (Direction(..), checkGridFallDownCollision, checkGridMovementCollision, checkGridOverlap, mergeGrids)
 import Input exposing (Key(..))
 import Messages exposing (Msg(..))
 import Model exposing (GameState(..), Model)
-import Movement exposing (Direction(..), fallDown, isCollidingWithFloor, moveTetroid, spawnTetroid)
+import Movement exposing (fallDown, isCollidingWithFloor, moveTetroid, spawnTetroid)
 import Random exposing (..)
 import Tetroids exposing (Tetroid, tetroidGenerator)
 
@@ -57,7 +57,7 @@ checkForCollision : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 checkForCollision ( model, cmd ) =
     case model.activeTetroid of
         Just tetroid ->
-            if isCollidingWithFloor tetroid model.dimensions then
+            if checkGridFallDownCollision tetroid.grid model.grid || isCollidingWithFloor tetroid model.dimensions then
                 ( { model | grid = mergeGrids model.grid tetroid.grid, activeTetroid = Nothing, fastFallDown = False }, cmd )
 
             else
@@ -79,16 +79,32 @@ handleKeyInput model key =
                     { model | fastFallDown = False }
 
                 ArrowDownKeyDown ->
-                    { model | activeTetroid = Just (moveTetroid tetroid Down model.dimensions) }
+                    if checkGridMovementCollision tetroid.grid model.grid Down then
+                        model
+
+                    else
+                        { model | activeTetroid = Just (moveTetroid tetroid Down model.dimensions) }
 
                 ArrowUpKeyDown ->
-                    { model | activeTetroid = Just (moveTetroid tetroid Up model.dimensions) }
+                    if checkGridMovementCollision tetroid.grid model.grid Up then
+                        model
+
+                    else
+                        { model | activeTetroid = Just (moveTetroid tetroid Up model.dimensions) }
 
                 ArrowLeftKeyDown ->
-                    { model | activeTetroid = Just (moveTetroid tetroid Left model.dimensions) }
+                    if checkGridMovementCollision tetroid.grid model.grid Left then
+                        model
+
+                    else
+                        { model | activeTetroid = Just (moveTetroid tetroid Left model.dimensions) }
 
                 ArrowRightKeyDown ->
-                    { model | activeTetroid = Just (moveTetroid tetroid Right model.dimensions) }
+                    if checkGridMovementCollision tetroid.grid model.grid Right then
+                        model
+
+                    else
+                        { model | activeTetroid = Just (moveTetroid tetroid Right model.dimensions) }
 
                 _ ->
                     model

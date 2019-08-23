@@ -1,16 +1,9 @@
-module Movement exposing (Direction(..), fallDown, isCollidingWithFloor, moveTetroid, moveTetroidByOffsetFromPosition, spawnTetroid, translate, translateCell, translateTetroid)
+module Movement exposing (fallDown, isCollidingWithFloor, moveTetroid, moveTetroidByOffsetFromPosition, spawnTetroid, translate, translateCell, translateTetroid)
 
 import Dimensions exposing (WorldDimensions, calculateTopCenter)
-import Grid exposing (Cell, Position)
+import Grid exposing (Cell, Direction(..), Position)
 import List
 import Tetroids exposing (Tetroid)
-
-
-type Direction
-    = Up
-    | Down
-    | Left
-    | Right
 
 
 translate : Position -> Position -> Position
