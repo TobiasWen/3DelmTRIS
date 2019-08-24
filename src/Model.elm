@@ -25,7 +25,7 @@ type alias Model =
     , gameState : GameState
     , fastFallDown : Bool
     , tickRateMs : Float
-    , counter : Int
+    , gameOver : Bool
     }
 
 
@@ -45,8 +45,8 @@ initialModel =
       , grid = []
       , gameState = Stopped
       , fastFallDown = False
-      , tickRateMs = 1000
-      , counter = 0
+      , tickRateMs = 750
+      , gameOver = False
       }
     , Random.generate Start tetroidGenerator
     )
@@ -55,7 +55,7 @@ initialModel =
 getTickRate : Model -> Float
 getTickRate model =
     if model.fastFallDown then
-        model.tickRateMs / 10
+        model.tickRateMs / 30
 
     else
         model.tickRateMs

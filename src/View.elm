@@ -1,7 +1,7 @@
 module View exposing (view)
 
 import Grid exposing (Color, Grid, Position, mergeGrids)
-import Html exposing (Html, br, button, div, p, span, text)
+import Html exposing (Html, br, button, div, h1, p, span, text)
 import Html.Attributes exposing (class, disabled, height, style, width)
 import Html.Events exposing (onClick)
 import List exposing (concat)
@@ -19,21 +19,39 @@ import WebGL exposing (Mesh, Shader)
 
 view : Model -> Html Msg
 view model =
-    WebGL.toHtml
-        [ width 1000
-        , height 1000
-        , style "display" "block"
-        , style "margin" "auto"
-        ]
-        (cellsToWebGLEnteties
-            (case model.activeTetroid of
-                Just tetroid ->
-                    mergeGrids model.grid tetroid.grid
+    div []
+        [ displayGameOverText model.gameOver
+        , WebGL.toHtml
+            [ width 800
+            , height 800
+            , style "display" "block"
+            , style "margin" "auto"
+            ]
+            (cellsToWebGLEnteties
+                (case model.activeTetroid of
+                    Just tetroid ->
+                        mergeGrids model.grid tetroid.grid
 
-                Nothing ->
-                    model.grid
+                    Nothing ->
+                        model.grid
+                )
             )
-        )
+        ]
+
+
+displayGameOverText : Bool -> Html Msg
+displayGameOverText isGameOver =
+    let
+        checkForVisibility =
+            if isGameOver then
+                style "visibility" "visible"
+
+            else
+                style "visibility" "hidden"
+    in
+    h1
+        [ checkForVisibility ]
+        [ text "Game Over! Press F5 to restart!" ]
 
 
 

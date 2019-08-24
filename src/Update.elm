@@ -57,7 +57,10 @@ checkForCollision : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 checkForCollision ( model, cmd ) =
     case model.activeTetroid of
         Just tetroid ->
-            if checkGridFallDownCollision tetroid.grid model.grid || isCollidingWithFloor tetroid model.dimensions then
+            if checkGridOverlap tetroid.grid model.grid then
+                ( { model | gameState = Stopped, gameOver = True }, cmd )
+
+            else if checkGridFallDownCollision tetroid.grid model.grid || isCollidingWithFloor tetroid model.dimensions then
                 ( { model | grid = mergeGrids model.grid tetroid.grid, activeTetroid = Nothing, fastFallDown = False }, cmd )
 
             else
