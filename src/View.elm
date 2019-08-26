@@ -133,13 +133,13 @@ type alias Vertex =
 
 
 cellToMesh : Cell -> Mesh Vertex
-cellToMesh cellWithoutFloats =
+cellToMesh cell =
     let
         cellColor =
-            toRecord (vec3 (toFloat cellWithoutFloats.color.r) (toFloat cellWithoutFloats.color.g) (toFloat cellWithoutFloats.color.b))
+            toRecord (vec3 (toFloat cell.color.r) (toFloat cell.color.g) (toFloat cell.color.b))
 
         cellPosition =
-            toRecord (vec3 (toFloat cellWithoutFloats.position.x) (toFloat cellWithoutFloats.position.y) (toFloat cellWithoutFloats.position.z))
+            toRecord (vec3 cell.position.x cell.position.y cell.position.z)
 
         --right front top
         rft =

@@ -1,7 +1,7 @@
 module MovementTest exposing (suite)
 
 import Expect exposing (Expectation)
-import Fuzz exposing (Fuzzer, int, list, string)
+import Fuzz exposing (Fuzzer, float, list, string)
 import Grid exposing (..)
 import Movement exposing (..)
 import Test exposing (..)
@@ -19,7 +19,7 @@ suite =
                     position
                         |> translate { x = 2, y = -2, z = 15 }
                         |> Expect.equal { x = 3, y = -1, z = 16 }
-            , fuzz3 int int int "Translate 100 random positions" <|
+            , fuzz3 float float float "Translate 100 random positions" <|
                 \x y z ->
                     -- { x = 1, y = 1, z = 1 }
                     position
@@ -31,7 +31,7 @@ suite =
                 \_ ->
                     translateCell cell { x = 2, y = -2, z = 15 }
                         |> Expect.equal { color = { r = 255, g = 255, b = 255 }, position = { x = 3, y = -1, z = 16 } }
-            , fuzz3 int int int "Translate 100 random cells" <|
+            , fuzz3 float float float "Translate 100 random cells" <|
                 \x y z ->
                     translateCell cell { x = x, y = y, z = z }
                         |> Expect.equal { color = { r = 255, g = 255, b = 255 }, position = { x = x + 1, y = y + 1, z = z + 1 } }

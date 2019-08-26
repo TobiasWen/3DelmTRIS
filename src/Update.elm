@@ -5,8 +5,9 @@ import Grid exposing (Direction(..), checkGridFallDownCollision, checkGridMoveme
 import Input exposing (Key(..))
 import Messages exposing (Msg(..))
 import Model exposing (GameState(..), Model)
-import Movement exposing (fallDown, isCollidingWithFloor, moveTetroid, spawnTetroid)
+import Movement exposing (calculateWallKickVector, fallDown, isCollidingWithFloor, moveTetroid, spawnTetroid, translateTetroid)
 import Random exposing (..)
+import Rotation exposing (Axis(..), canRotate, rotateTetroid)
 import Tetroids exposing (Tetroid, tetroidGenerator)
 
 
@@ -108,6 +109,27 @@ handleKeyInput model key =
 
                     else
                         { model | activeTetroid = Just (moveTetroid tetroid Right model.dimensions) }
+
+                QKeyDown ->
+                    if canRotate tetroid model.grid X model.dimensions then
+                        { model | activeTetroid = Just (translateTetroid (rotateTetroid tetroid X) (calculateWallKickVector (rotateTetroid tetroid X) model.dimensions)) }
+
+                    else
+                        model
+
+                EKeyDown ->
+                    if canRotate tetroid model.grid Y model.dimensions then
+                        { model | activeTetroid = Just (translateTetroid (rotateTetroid tetroid Y) (calculateWallKickVector (rotateTetroid tetroid Y) model.dimensions)) }
+
+                    else
+                        model
+
+                RKeyDown ->
+                    if canRotate tetroid model.grid Z model.dimensions then
+                        { model | activeTetroid = Just (translateTetroid (rotateTetroid tetroid Z) (calculateWallKickVector (rotateTetroid tetroid Z) model.dimensions)) }
+
+                    else
+                        model
 
                 _ ->
                     model

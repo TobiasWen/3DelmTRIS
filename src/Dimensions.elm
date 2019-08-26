@@ -8,12 +8,12 @@ import Grid exposing (Position)
 
 
 type alias WorldDimensions =
-    { width : Int
-    , height : Int
-    , depth : Int
+    { width : Float
+    , height : Float
+    , depth : Float
     }
 
 
 calculateTopCenter : WorldDimensions -> Position
 calculateTopCenter { width, height, depth } =
-    Position (width // 2) 0 (depth // 2)
+    Position (toFloat <| floor <| (width / 2)) 0 (toFloat <| floor <| (depth / 2))

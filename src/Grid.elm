@@ -1,4 +1,4 @@
-module Grid exposing (Cell, Color, Direction(..), Grid, Position, checkGridFallDownCollision, checkGridMovementCollision, checkGridOverlap, isPositionNextToGrid, mergeGrids, setPosition)
+module Grid exposing (Cell, Color, Direction(..), Grid, Position, addPositions, checkGridFallDownCollision, checkGridMovementCollision, checkGridOverlap, isPositionNextToGrid, mergeGrids, setPosition, subtractPositions)
 
 
 type Direction
@@ -21,10 +21,10 @@ type alias Color =
 
 
 type alias Position =
-    { x : Int, y : Int, z : Int }
+    { x : Float, y : Float, z : Float }
 
 
-setPosition : Int -> Int -> Int -> Position -> Position
+setPosition : Float -> Float -> Float -> Position -> Position
 setPosition x y z vec =
     { vec | x = x, y = y, z = z }
 
@@ -40,7 +40,7 @@ type alias Cell =
 
 
 
--- A grid is the composition of many cells
+-- A grid i1 the composition of many cells
 
 
 type alias Grid =
@@ -86,6 +86,20 @@ checkGridFallDownCollision g1 g2 =
 checkGridMovementCollision : Grid -> Grid -> Direction -> Bool
 checkGridMovementCollision g1 g2 dir =
     List.any (\cell -> isPositionNextToGrid g2 cell.position dir) g1
+
+
+
+-- TODO: Optimize with function receiving operator (+) (-) etc.
+
+
+subtractPositions : Position -> Position -> Position
+subtractPositions p1 p2 =
+    { p1 | x = p1.x - p2.x, y = p1.y - p2.y, z = p1.z - p2.z }
+
+
+addPositions : Position -> Position -> Position
+addPositions p1 p2 =
+    { p1 | x = p1.x + p2.x, y = p1.y + p2.y, z = p1.z + p2.z }
 
 
 

@@ -9,10 +9,9 @@ type Key
     | ArrowLeftKeyDown
     | ArrowRightKeyDown
     | SpaceKeyDown
-    | ArrowUpKeyUp
-    | ArrowDownKeyUp
-    | ArrowLeftKeyUp
-    | ArrowRightKeyUp
+    | QKeyDown
+    | EKeyDown
+    | RKeyDown
     | SpaceKeyUp
     | Other
 
@@ -42,6 +41,15 @@ toKeyDown string =
         "ArrowRight" ->
             ArrowRightKeyDown
 
+        "q" ->
+            QKeyDown
+
+        "e" ->
+            EKeyDown
+
+        "r" ->
+            RKeyDown
+
         " " ->
             SpaceKeyDown
 
@@ -52,18 +60,6 @@ toKeyDown string =
 toKeyUp : String -> Key
 toKeyUp string =
     case string of
-        "ArrowUp" ->
-            ArrowUpKeyUp
-
-        "ArrowDown" ->
-            ArrowDownKeyUp
-
-        "ArrowLeft" ->
-            ArrowLeftKeyUp
-
-        "ArrowRight" ->
-            ArrowRightKeyUp
-
         " " ->
             SpaceKeyUp
 

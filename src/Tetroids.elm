@@ -85,7 +85,7 @@ createBlueTetroid =
 createYellowTetroid : Tetroid
 createYellowTetroid =
     createTetroid yellow
-        { x = 0, y = 0, z = 0 }
+        { x = 0.5, y = 0.5, z = 0.5 }
         [ Position 0 0 0
         , Position 0 1 0
         , Position 1 0 0
