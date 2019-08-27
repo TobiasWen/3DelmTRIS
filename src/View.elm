@@ -21,13 +21,16 @@ view : Model -> Html Msg
 view model =
     div []
         [ displayGameOverText model.gameOver
+        , div [] [ text ("X. " ++ String.fromFloat model.mousePosition.x) ]
+        , div [] [ text ("Y: " ++ String.fromFloat model.mousePosition.y) ]
         , WebGL.toHtml
-            [ width 800
+            [ width 1200
             , height 800
             , style "display" "block"
             , style "margin" "auto"
             ]
             (cellsToWebGLEnteties
+                model
                 (case model.activeTetroid of
                     Just tetroid ->
                         mergeGrids model.grid tetroid.grid
@@ -72,13 +75,30 @@ type alias Uniforms =
     }
 
 
-uniforms : Uniforms
-uniforms =
+uniforms : Model -> Uniforms
+uniforms model =
     { rotation = Mat4.identity
-    , perspective = Mat4.makePerspective 60 1 0.001 1000
-    , camera = Mat4.makeLookAt (vec3 6 6 -25) (vec3 6 6 6) (vec3 0 -1 0) -- inverted Camera
+    , perspective = manipulatePerspective 1200 800 model.mousePosition.x model.mousePosition.y
+    , camera = Mat4.makeLookAt (vec3 0 0 6) (vec3 0 0 0) (vec3 0 -1 0)
     , shade = 0.8
     }
+
+
+
+--vec3 (0.5 * cos (degrees x)) (0.5 * sin (degrees x)) 1
+
+
+manipulatePerspective : Float -> Float -> Float -> Float -> Mat4
+manipulatePerspective width height x y =
+    let
+        eye =
+            vec3 (0.2 * cos (degrees x)) -(0.5 - y / height) (0.2 * sin (degrees x))
+                |> Vec3.normalize
+                |> Vec3.scale 25
+    in
+    Mat4.mul
+        (Mat4.makePerspective 60 (width / height) 0.01 1000)
+        (Mat4.makeLookAt eye (vec3 0 0 0) Vec3.j)
 
 
 
@@ -96,8 +116,8 @@ uniforms =
 --
 
 
-cellsToWebGLEnteties : List Cell -> List WebGL.Entity
-cellsToWebGLEnteties cells =
+cellsToWebGLEnteties : Model -> List Cell -> List WebGL.Entity
+cellsToWebGLEnteties model cells =
     case cells of
         [] ->
             []
@@ -107,7 +127,7 @@ cellsToWebGLEnteties cells =
                 vertexShader
                 fragmentShader
                 (cellToMesh x)
-                uniforms
+                (uniforms model)
             ]
 
         x :: xs ->
@@ -116,9 +136,9 @@ cellsToWebGLEnteties cells =
                         vertexShader
                         fragmentShader
                         (cellToMesh x)
-                        uniforms
+                        (uniforms model)
                   ]
-                , cellsToWebGLEnteties xs
+                , cellsToWebGLEnteties model xs
                 ]
 
 

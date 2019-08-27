@@ -26,6 +26,7 @@ type alias Model =
     , fastFallDown : Bool
     , tickRateMs : Float
     , gameOver : Bool
+    , mousePosition : { x : Float, y : Float }
     }
 
 
@@ -45,8 +46,9 @@ initialModel =
       , grid = []
       , gameState = Stopped
       , fastFallDown = False
-      , tickRateMs = 750
+      , tickRateMs = 1000
       , gameOver = False
+      , mousePosition = { x = 0, y = 0 }
       }
     , Random.generate Start tetroidGenerator
     )

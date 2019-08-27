@@ -2,7 +2,7 @@ module Update exposing (update)
 
 import Dimensions exposing (WorldDimensions, calculateTopCenter)
 import Grid exposing (Direction(..), checkGridFallDownCollision, checkGridMovementCollision, checkGridOverlap, mergeGrids)
-import Input exposing (Key(..))
+import Input exposing (Key(..), Mouse)
 import Messages exposing (Msg(..))
 import Model exposing (GameState(..), Model)
 import Movement exposing (calculateWallKickVector, fallDown, isCollidingWithFloor, moveTetroid, spawnTetroid, translateTetroid)
@@ -25,6 +25,9 @@ update msg model =
 
         KeyEvent key ->
             ( handleKeyInput model key, Cmd.none )
+
+        MouseEvent mouse ->
+            ( { model | mousePosition = mouse }, Cmd.none )
 
         _ ->
             ( model, Cmd.none )

@@ -1,4 +1,4 @@
-module Input exposing (Key(..), keyDownDecoder, keyUpDecoder, toKeyDown, toKeyUp)
+module Input exposing (Key(..), Mouse, keyDownDecoder, keyUpDecoder, mousePosition, toKeyDown, toKeyUp)
 
 import Json.Decode
 
@@ -16,6 +16,12 @@ type Key
     | Other
 
 
+type alias Mouse =
+    { x : Float
+    , y : Float
+    }
+
+
 keyDownDecoder : Json.Decode.Decoder Key
 keyDownDecoder =
     Json.Decode.map toKeyDown (Json.Decode.field "key" Json.Decode.string)
@@ -24,6 +30,13 @@ keyDownDecoder =
 keyUpDecoder : Json.Decode.Decoder Key
 keyUpDecoder =
     Json.Decode.map toKeyUp (Json.Decode.field "key" Json.Decode.string)
+
+
+mousePosition : Json.Decode.Decoder Mouse
+mousePosition =
+    Json.Decode.map2 (\x y -> { x = x, y = y })
+        (Json.Decode.field "pageX" Json.Decode.float)
+        (Json.Decode.field "pageY" Json.Decode.float)
 
 
 toKeyDown : String -> Key
