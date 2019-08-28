@@ -87,20 +87,23 @@ uniforms model =
 
 
 
---vec3 (0.5 * cos (degrees x)) (0.5 * sin (degrees x)) 1
+--calc circle
 
 
 manipulatePerspective : Float -> Float -> Model -> Mat4
 manipulatePerspective width height model =
     let
+        sensitivity =
+            0.32
+
         eye =
-            vec3 (0.2 * cos (degrees model.mousePosition.x)) -(0.5 - model.mousePosition.y / height) (0.2 * sin (degrees model.mousePosition.x))
+            vec3 (0.2 * cos (degrees (model.mousePosition.x * sensitivity))) -(0.5 - model.mousePosition.y / height) (0.2 * sin (degrees (model.mousePosition.x * sensitivity)))
                 |> Vec3.normalize
-                |> Vec3.scale 25
+                |> Vec3.scale 18
     in
     Mat4.mul
         (Mat4.makePerspective 60 (width / height) 0.01 1000)
-        (Mat4.makeLookAt eye (vec3 0 -(model.dimensions.height / 2) 0) Vec3.j)
+        (Mat4.makeLookAt eye (vec3 0 -9 0) Vec3.j)
 
 
 
