@@ -42,16 +42,16 @@ mousePosition =
 toKeyDown : String -> Key
 toKeyDown string =
     case string of
-        "ArrowUp" ->
+        "w" ->
             ArrowUpKeyDown
 
-        "ArrowDown" ->
+        "s" ->
             ArrowDownKeyDown
 
-        "ArrowLeft" ->
+        "a" ->
             ArrowLeftKeyDown
 
-        "ArrowRight" ->
+        "d" ->
             ArrowRightKeyDown
 
         "q" ->

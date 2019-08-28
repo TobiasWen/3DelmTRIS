@@ -19,26 +19,28 @@ import WebGL exposing (Mesh, Shader)
 
 view : Model -> Html Msg
 view model =
+    let
+        fullgrid =
+            playAreaEntity model
+                ++ cellsToWebGLEnteties
+                    model
+                    (case model.activeTetroid of
+                        Just tetroid ->
+                            mergeGrids model.grid tetroid.grid
+
+                        Nothing ->
+                            model.grid
+                    )
+    in
     div []
         [ displayGameOverText model.gameOver
-        , div [] [ text ("X. " ++ String.fromFloat model.mousePosition.x) ]
-        , div [] [ text ("Y: " ++ String.fromFloat model.mousePosition.y) ]
         , WebGL.toHtml
             [ width 1200
             , height 800
             , style "display" "block"
             , style "margin" "auto"
             ]
-            (cellsToWebGLEnteties
-                model
-                (case model.activeTetroid of
-                    Just tetroid ->
-                        mergeGrids model.grid tetroid.grid
-
-                    Nothing ->
-                        model.grid
-                )
-            )
+            fullgrid
         ]
 
 
@@ -78,8 +80,8 @@ type alias Uniforms =
 uniforms : Model -> Uniforms
 uniforms model =
     { rotation = Mat4.identity
-    , perspective = manipulatePerspective 1200 800 model.mousePosition.x model.mousePosition.y
-    , camera = Mat4.makeLookAt (vec3 0 0 6) (vec3 0 0 0) (vec3 0 -1 0)
+    , perspective = manipulatePerspective 1200 800 model
+    , camera = Mat4.makeLookAt (vec3 (model.dimensions.width / 2) 0 (model.dimensions.depth / 2)) (vec3 0 0 0) (vec3 0 -1 0)
     , shade = 0.8
     }
 
@@ -88,17 +90,17 @@ uniforms model =
 --vec3 (0.5 * cos (degrees x)) (0.5 * sin (degrees x)) 1
 
 
-manipulatePerspective : Float -> Float -> Float -> Float -> Mat4
-manipulatePerspective width height x y =
+manipulatePerspective : Float -> Float -> Model -> Mat4
+manipulatePerspective width height model =
     let
         eye =
-            vec3 (0.2 * cos (degrees x)) -(0.5 - y / height) (0.2 * sin (degrees x))
+            vec3 (0.2 * cos (degrees model.mousePosition.x)) -(0.5 - model.mousePosition.y / height) (0.2 * sin (degrees model.mousePosition.x))
                 |> Vec3.normalize
                 |> Vec3.scale 25
     in
     Mat4.mul
         (Mat4.makePerspective 60 (width / height) 0.01 1000)
-        (Mat4.makeLookAt eye (vec3 0 0 0) Vec3.j)
+        (Mat4.makeLookAt eye (vec3 0 -(model.dimensions.height / 2) 0) Vec3.j)
 
 
 
@@ -204,6 +206,74 @@ cellToMesh cell =
     , face (vec3 cellColor.x cellColor.y cellColor.z) rft lft lbt rbt -- top
     , face shade1 rfb lfb lbb rbb -- back
     , face (vec3 cellColor.x cellColor.y cellColor.z) lft lfb lbb lbt --left
+    , face shade2 rbt rbb lbb lbt -- bot
+    ]
+        |> List.concat
+        |> WebGL.triangles
+
+
+playAreaEntity : Model -> List WebGL.Entity
+playAreaEntity model =
+    [ WebGL.entity
+        vertexShader
+        fragmentShader
+        (playareaBase model)
+        (uniforms model)
+    ]
+
+
+playareaBase : Model -> Mesh Vertex
+playareaBase model =
+    let
+        color =
+            toRecord (vec3 70 70 70)
+
+        plateheight =
+            1.5
+
+        --right front top
+        rft =
+            vec3 model.dimensions.width model.dimensions.height 0
+
+        -- left front top
+        lft =
+            vec3 0 model.dimensions.height 0
+
+        --left back top
+        lbt =
+            vec3 0 model.dimensions.height model.dimensions.depth
+
+        --right back top
+        rbt =
+            vec3 model.dimensions.width model.dimensions.height model.dimensions.depth
+
+        --right back bot
+        rbb =
+            vec3 model.dimensions.width (model.dimensions.height + plateheight) model.dimensions.depth
+
+        --right front bot
+        rfb =
+            vec3 model.dimensions.width (model.dimensions.height + plateheight) 0
+
+        --left front bot
+        lfb =
+            vec3 0 (model.dimensions.height + plateheight) 0
+
+        -- left back bot
+        lbb =
+            vec3 0 (model.dimensions.height + plateheight) model.dimensions.depth
+
+        shade1 =
+            vec3 (color.x - 30) (color.y - 30) (color.z - 30)
+
+        shade2 =
+            vec3 (color.x - 50) (color.y - 50) (color.z - 50)
+    in
+    [ face shade2 rft rfb rbb rbt -- right
+    , face shade1 rft rfb lfb lft -- front
+    , face (vec3 color.x color.y color.z) rft lft lbt rbt -- top
+    , face shade1 rfb lfb lbb rbb -- back
+    , face (vec3 color.x color.y color.z) lft lfb lbb lbt --left
     , face shade2 rbt rbb lbb lbt -- bot
     ]
         |> List.concat
