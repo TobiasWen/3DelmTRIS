@@ -226,7 +226,7 @@ cellToMesh : Cell -> Mesh Vertex
 cellToMesh cell =
     let
         cellColor =
-            toRecord (vec3 (toFloat cell.color.r) (toFloat cell.color.g) (toFloat cell.color.b))
+            vec3 (toFloat cell.color.r) (toFloat cell.color.g) (toFloat cell.color.b)
 
         cellPosition =
             toRecord (vec3 cell.position.x cell.position.y cell.position.z)
@@ -264,20 +264,17 @@ cellToMesh cell =
             vec3 cellPosition.x cellPosition.y (cellPosition.z + 1)
 
         shade1 =
-            vec3 cellColor.x cellColor.y cellColor.z
+            Vec3.scale 0.9 cellColor
 
         shade2 =
-            vec3 (cellColor.x - 30) (cellColor.y - 30) (cellColor.z - 30)
-
-        shade3 =
-            vec3 (cellColor.x - 50) (cellColor.y - 50) (cellColor.z - 50)
+            Vec3.scale 0.9 shade1
     in
-    [ face shade1 rft rfb rbb rbt -- right
-    , face shade3 rft rfb lfb lft -- front
-    , face shade2 rft lft lbt rbt -- top
-    , face shade2 rfb lfb lbb rbb -- bot
-    , face shade1 lft lfb lbb lbt --left
-    , face shade3 rbt rbb lbb lbt -- back
+    [ face cellColor rft rfb rbb rbt -- right
+    , face shade2 rft rfb lfb lft -- front
+    , face shade1 rft lft lbt rbt -- top
+    , face shade1 rfb lfb lbb rbb -- bot
+    , face cellColor lft lfb lbb lbt --left
+    , face shade2 rbt rbb lbb lbt -- back
     ]
         |> List.concat
         |> WebGL.triangles
@@ -302,7 +299,7 @@ playareaBase : Model -> Mesh Vertex
 playareaBase model =
     let
         color =
-            toRecord (vec3 70 70 70)
+            vec3 50 50 50
 
         plateheight =
             1.5
@@ -340,20 +337,17 @@ playareaBase model =
             vec3 0 (model.dimensions.height + plateheight) model.dimensions.depth
 
         shade1 =
-            vec3 color.x color.y color.z
+            Vec3.scale 0.9 color
 
         shade2 =
-            vec3 (color.x - 30) (color.y - 30) (color.z - 30)
-
-        shade3 =
-            vec3 (color.x - 50) (color.y - 50) (color.z - 50)
+            Vec3.scale 0.9 shade1
     in
-    [ face shade1 rft rfb rbb rbt -- right
-    , face shade3 rft rfb lfb lft -- front
-    , face shade2 rft lft lbt rbt -- top
-    , face shade3 rfb lfb lbb rbb -- back
-    , face shade1 lft lfb lbb lbt --left
-    , face shade2 rbt rbb lbb lbt -- bot
+    [ face color rft rfb rbb rbt -- right
+    , face shade2 rft rfb lfb lft -- front
+    , face shade1 rft lft lbt rbt -- top
+    , face shade1 rfb lfb lbb rbb -- bot
+    , face color lft lfb lbb lbt --left
+    , face shade2 rbt rbb lbb lbt -- back
     ]
         |> List.concat
         |> WebGL.triangles
@@ -363,7 +357,7 @@ playareaHulle : Model -> Mesh Vertex
 playareaHulle model =
     let
         color =
-            toRecord (vec3 150 150 150)
+            vec3 175 175 175
 
         --right front top
         rft =
@@ -398,19 +392,17 @@ playareaHulle model =
             vec3 0 model.dimensions.height model.dimensions.depth
 
         shade1 =
-            vec3 color.x color.y color.z
+            Vec3.scale 0.9 color
 
         shade2 =
-            vec3 (color.x - 30) (color.y - 30) (color.z - 30)
-
-        shade3 =
-            vec3 (color.x - 50) (color.y - 50) (color.z - 50)
+            Vec3.scale 0.9 shade1
     in
-    [ face shade2 rft rfb rbb rbt -- right
-    , face shade1 rft rfb lfb lft -- front
-    , face shade3 rft lft lbt rbt -- top
-    , face shade2 lft lfb lbb lbt --left
-    , face shade3 rbt rbb lbb lbt -- back
+    [ face color rft rfb rbb rbt -- right
+    , face shade2 rft rfb lfb lft -- front
+    , face shade1 rft lft lbt rbt -- top
+    , face shade1 rfb lfb lbb rbb -- bot
+    , face color lft lfb lbb lbt --left
+    , face shade2 rbt rbb lbb lbt -- back
     ]
         |> List.concat
         |> WebGL.triangles
@@ -421,9 +413,12 @@ face color a b c d =
     let
         vertex position =
             Vertex (Vec3.scale (1 / 255) color) position
+
+        vertex2 position =
+            Vertex (Vec3.scale 0.7 (Vec3.scale (1 / 255) color)) position
     in
-    [ ( vertex a, vertex b, vertex c )
-    , ( vertex c, vertex d, vertex a )
+    [ ( vertex2 a, vertex b, vertex2 c )
+    , ( vertex2 c, vertex d, vertex2 a )
     ]
 
 
