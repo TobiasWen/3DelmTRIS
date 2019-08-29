@@ -10,6 +10,7 @@ import Math.Vector3 as Vec3 exposing (Vec3, toRecord, vec3)
 import Messages exposing (Msg)
 import Model exposing (Model)
 import WebGL exposing (Mesh, Shader)
+import WebGL.Settings.Blend exposing (..)
 
 
 
@@ -31,10 +32,13 @@ view model =
                         Nothing ->
                             model.grid
                     )
+
+        settings =
+            [ WebGL.alpha True, WebGL.antialias, WebGL.depth 1 ]
     in
     div []
         [ displayGameOverText model.gameOver
-        , WebGL.toHtml
+        , WebGL.toHtmlWith settings
             [ width 1200
             , height 800
             , style "display" "block"
@@ -217,7 +221,12 @@ cellToMesh cell =
 
 playAreaEntity : Model -> List WebGL.Entity
 playAreaEntity model =
-    [ WebGL.entity
+    [ WebGL.entityWith [ add one one ]
+        vertexShader
+        fragmentShader
+        (playareaHulle model)
+        (uniforms model)
+    , WebGL.entity
         vertexShader
         fragmentShader
         (playareaBase model)
@@ -278,6 +287,63 @@ playareaBase model =
     , face shade1 rfb lfb lbb rbb -- back
     , face (vec3 color.x color.y color.z) lft lfb lbb lbt --left
     , face shade2 rbt rbb lbb lbt -- bot
+    ]
+        |> List.concat
+        |> WebGL.triangles
+
+
+playareaHulle : Model -> Mesh Vertex
+playareaHulle model =
+    let
+        color =
+            toRecord (vec3 150 150 150)
+
+        --right front top
+        rft =
+            vec3 model.dimensions.width 0 0
+
+        -- left front top
+        lft =
+            vec3 0 0 0
+
+        --left back top
+        lbt =
+            vec3 0 0 model.dimensions.depth
+
+        --right back top
+        rbt =
+            vec3 model.dimensions.width 0 model.dimensions.depth
+
+        --right back bot
+        rbb =
+            vec3 model.dimensions.width model.dimensions.height model.dimensions.depth
+
+        --right front bot
+        rfb =
+            vec3 model.dimensions.width model.dimensions.height 0
+
+        --left front bot
+        lfb =
+            vec3 0 model.dimensions.height 0
+
+        -- left back bot
+        lbb =
+            vec3 0 model.dimensions.height model.dimensions.depth
+
+        shade1 =
+            vec3 color.x color.y color.z
+
+        shade2 =
+            vec3 (color.x - 30) (color.y - 30) (color.z - 30)
+
+        shade3 =
+            vec3 (color.x - 50) (color.y - 50) (color.z - 50)
+    in
+    [ face shade2 rft rfb rbb rbt -- right
+    , face shade1 rft rfb lfb lft -- front
+    , face shade3 rft lft lbt rbt -- top
+    , face shade2 lft lfb lbb lbt --left
+    , face shade3 rbt rbb lbb lbt -- back
     ]
         |> List.concat
         |> WebGL.triangles
