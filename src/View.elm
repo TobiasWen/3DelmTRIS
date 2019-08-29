@@ -23,7 +23,7 @@ view model =
     let
         fullgrid =
             playAreaEntity model
-                ++ cellsToWebGLEnteties
+                ++ cellsToWebGLEnteties False
                     model
                     (case model.activeTetroid of
                         Just tetroid ->
@@ -37,14 +37,43 @@ view model =
             [ WebGL.alpha True, WebGL.antialias, WebGL.depth 1 ]
     in
     div []
-        [ displayGameOverText model.gameOver
-        , WebGL.toHtmlWith settings
-            [ width 1200
-            , height 800
-            , style "display" "block"
-            , style "margin" "auto"
+        [ div []
+            [ h1
+                [ style "display" "block"
+                , style "text-align" "center"
+                , style "margin" "auto"
+                ]
+                [ text "Next Tetroid" ]
+            , WebGL.toHtmlWith settings
+                [ width 224
+                , height 224
+                , style "display" "block"
+                , style "margin" "auto"
+                , style "background" "lightgrey"
+                ]
+                (cellsToWebGLEnteties True
+                    model
+                    (case model.upcomingTetroid of
+                        Just tetroid ->
+                            tetroid.grid
+
+                        Nothing ->
+                            []
+                    )
+                )
             ]
-            fullgrid
+        , div
+            []
+            [ displayGameOverText model.gameOver
+            , WebGL.toHtmlWith settings
+                [ width 1200
+                , height 1000
+                , style "display" "block"
+                , style "margin" "auto"
+                , style "background" "transparent"
+                ]
+                fullgrid
+            ]
         ]
 
 
@@ -81,33 +110,65 @@ type alias Uniforms =
     }
 
 
-uniforms : Model -> Uniforms
-uniforms model =
-    { rotation = Mat4.identity
-    , perspective = manipulatePerspective 1200 800 model
-    , camera = Mat4.makeLookAt (vec3 (model.dimensions.width / 2) 0 (model.dimensions.depth / 2)) (vec3 0 0 0) (vec3 0 -1 0)
-    , shade = 0.8
-    }
+uniforms : Bool -> Model -> Uniforms
+uniforms isStaticCamera model =
+    if isStaticCamera then
+        { rotation = Mat4.identity
+        , perspective = manipulatePerspective isStaticCamera 8 224 224 model
+        , camera = Mat4.makeLookAt (vec3 (model.dimensions.width / 2) 0 (model.dimensions.depth / 2)) (vec3 0 0 0) (vec3 0 -1 0)
+        , shade = 0.8
+        }
+
+    else
+        { rotation = Mat4.identity
+        , perspective = manipulatePerspective isStaticCamera 22 1200 1000 model
+        , camera = Mat4.makeLookAt (vec3 (model.dimensions.width / 2) 0 (model.dimensions.depth / 2)) (vec3 0 0 0) (vec3 0 -1 0)
+        , shade = 0.8
+        }
 
 
 
 --calc circle
 
 
-manipulatePerspective : Float -> Float -> Model -> Mat4
-manipulatePerspective width height model =
-    let
-        sensitivity =
-            0.32
+manipulatePerspective : Bool -> Float -> Float -> Float -> Model -> Mat4
+manipulatePerspective isStaticCamera zoom width height model =
+    if isStaticCamera then
+        let
+            sensitivity =
+                0.6
 
-        eye =
-            vec3 (0.2 * cos (degrees (model.mousePosition.x * sensitivity))) -(0.5 - model.mousePosition.y / height) (0.2 * sin (degrees (model.mousePosition.x * sensitivity)))
-                |> Vec3.normalize
-                |> Vec3.scale 18
-    in
-    Mat4.mul
-        (Mat4.makePerspective 60 (width / height) 0.01 1000)
-        (Mat4.makeLookAt eye (vec3 0 -9 0) Vec3.j)
+            eye =
+                vec3 (0.1 * cos (degrees (model.mousePosition.x * sensitivity))) 0 (0.1 * sin (degrees (model.mousePosition.x * sensitivity)))
+                    |> Vec3.normalize
+                    |> Vec3.scale zoom
+        in
+        Mat4.mul
+            (Mat4.makePerspective 50 (width / height) 0.01 1000)
+            (Mat4.makeLookAt eye
+                (case model.upcomingTetroid of
+                    Just tetroid ->
+                        vec3 0 -tetroid.center.y 0
+
+                    Nothing ->
+                        vec3 0 -1 0
+                )
+                Vec3.j
+            )
+
+    else
+        let
+            sensitivity =
+                0.3
+
+            eye =
+                vec3 (0.2 * cos (degrees (model.mousePosition.x * sensitivity))) -(0.5 - model.mousePosition.y / height) (0.2 * sin (degrees (model.mousePosition.x * sensitivity)))
+                    |> Vec3.normalize
+                    |> Vec3.scale zoom
+        in
+        Mat4.mul
+            (Mat4.makePerspective 55 (width / height) 0.01 1000)
+            (Mat4.makeLookAt eye (vec3 0 -(model.dimensions.height / 2) 0) Vec3.j)
 
 
 
@@ -125,8 +186,8 @@ manipulatePerspective width height model =
 --
 
 
-cellsToWebGLEnteties : Model -> List Cell -> List WebGL.Entity
-cellsToWebGLEnteties model cells =
+cellsToWebGLEnteties : Bool -> Model -> List Cell -> List WebGL.Entity
+cellsToWebGLEnteties isStaticCamera model cells =
     case cells of
         [] ->
             []
@@ -136,7 +197,7 @@ cellsToWebGLEnteties model cells =
                 vertexShader
                 fragmentShader
                 (cellToMesh x)
-                (uniforms model)
+                (uniforms isStaticCamera model)
             ]
 
         x :: xs ->
@@ -145,9 +206,9 @@ cellsToWebGLEnteties model cells =
                         vertexShader
                         fragmentShader
                         (cellToMesh x)
-                        (uniforms model)
+                        (uniforms isStaticCamera model)
                   ]
-                , cellsToWebGLEnteties model xs
+                , cellsToWebGLEnteties isStaticCamera model xs
                 ]
 
 
@@ -203,17 +264,20 @@ cellToMesh cell =
             vec3 cellPosition.x cellPosition.y (cellPosition.z + 1)
 
         shade1 =
-            vec3 (cellColor.x - 30) (cellColor.y - 30) (cellColor.z - 30)
+            vec3 cellColor.x cellColor.y cellColor.z
 
         shade2 =
+            vec3 (cellColor.x - 30) (cellColor.y - 30) (cellColor.z - 30)
+
+        shade3 =
             vec3 (cellColor.x - 50) (cellColor.y - 50) (cellColor.z - 50)
     in
-    [ face shade2 rft rfb rbb rbt -- right
-    , face shade1 rft rfb lfb lft -- front
-    , face (vec3 cellColor.x cellColor.y cellColor.z) rft lft lbt rbt -- top
-    , face shade1 rfb lfb lbb rbb -- back
-    , face (vec3 cellColor.x cellColor.y cellColor.z) lft lfb lbb lbt --left
-    , face shade2 rbt rbb lbb lbt -- bot
+    [ face shade1 rft rfb rbb rbt -- right
+    , face shade3 rft rfb lfb lft -- front
+    , face shade2 rft lft lbt rbt -- top
+    , face shade2 rfb lfb lbb rbb -- bot
+    , face shade1 lft lfb lbb lbt --left
+    , face shade3 rbt rbb lbb lbt -- back
     ]
         |> List.concat
         |> WebGL.triangles
@@ -225,12 +289,12 @@ playAreaEntity model =
         vertexShader
         fragmentShader
         (playareaHulle model)
-        (uniforms model)
+        (uniforms False model)
     , WebGL.entity
         vertexShader
         fragmentShader
         (playareaBase model)
-        (uniforms model)
+        (uniforms False model)
     ]
 
 
@@ -276,16 +340,19 @@ playareaBase model =
             vec3 0 (model.dimensions.height + plateheight) model.dimensions.depth
 
         shade1 =
-            vec3 (color.x - 30) (color.y - 30) (color.z - 30)
+            vec3 color.x color.y color.z
 
         shade2 =
+            vec3 (color.x - 30) (color.y - 30) (color.z - 30)
+
+        shade3 =
             vec3 (color.x - 50) (color.y - 50) (color.z - 50)
     in
-    [ face shade2 rft rfb rbb rbt -- right
-    , face shade1 rft rfb lfb lft -- front
-    , face (vec3 color.x color.y color.z) rft lft lbt rbt -- top
-    , face shade1 rfb lfb lbb rbb -- back
-    , face (vec3 color.x color.y color.z) lft lfb lbb lbt --left
+    [ face shade1 rft rfb rbb rbt -- right
+    , face shade3 rft rfb lfb lft -- front
+    , face shade2 rft lft lbt rbt -- top
+    , face shade3 rfb lfb lbb rbb -- back
+    , face shade1 lft lfb lbb lbt --left
     , face shade2 rbt rbb lbb lbt -- bot
     ]
         |> List.concat
