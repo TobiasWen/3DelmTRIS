@@ -1,4 +1,4 @@
-module TestSetup exposing (blueTetroidInTopCenter, cell, orangeTetroidInTopCenter, position, setupTetroid, worldDimensions)
+module TestSetup exposing (blueTetroidInTopCenter, cell, orangeTetroidInTopCenter, position, setupPlanesOneLevel, setupTetroid, worldDimensions)
 
 import Dimensions exposing (..)
 import Expect exposing (Expectation)
@@ -37,6 +37,11 @@ worldDimensions =
     }
 
 
+setupPlanesOneLevel : Grid
+setupPlanesOneLevel =
+    createFilledGrid (worldDimensions.height - 1) worldDimensions
+
+
 blueTetroidInTopCenter : Tetroid
 blueTetroidInTopCenter =
     createTetroid blue
@@ -57,3 +62,17 @@ orangeTetroidInTopCenter =
         , Position 3 2 3
         , Position 3 2 4
         ]
+
+
+createFilledGrid : Float -> WorldDimensions -> Grid
+createFilledGrid level dims =
+    let
+        createCells : Grid
+        createCells =
+            List.repeat (round <| dims.width * dims.depth) { color = Color 255 255 255, position = Position 0 0 0 }
+
+        setPlaneCoordinates : Grid -> Grid
+        setPlaneCoordinates grid =
+            List.indexedMap (\index currentCell -> { currentCell | position = { x = toFloat <| modBy (round dims.width) index, y = level, z = toFloat <| index // round dims.width } }) grid
+    in
+    setPlaneCoordinates createCells
