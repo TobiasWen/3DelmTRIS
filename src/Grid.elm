@@ -1,4 +1,4 @@
-module Grid exposing (Cell, Color, Direction(..), Grid, Position, addPositions, checkGridFallDownCollision, checkGridMovementCollision, checkGridOverlap, isPositionNextToGrid, mergeGrids, setPosition, subtractPositions)
+module Grid exposing (Cell, Color, Direction(..), Grid, Position, addPositions, checkGridFallDownCollision, checkGridMovementCollision, checkGridOverlap, clearPlanes, filterOutPlanes, getPlanesToRemove, isPlaneFull, isPositionNextToGrid, mergeGrids, setPosition, subtractPositions)
 
 
 type Direction
@@ -109,3 +109,35 @@ addPositions p1 p2 =
 mergeGrids : Grid -> Grid -> Grid
 mergeGrids g1 g2 =
     List.concat [ g1, g2 ]
+
+
+isPlaneFull : Grid -> Int -> Float -> Bool
+isPlaneFull grid cellCount level =
+    (List.length <| List.filter (\cell -> cell.position.y == level) grid) == cellCount
+
+
+getPlanesToRemove : Grid -> Float -> Float -> Int -> List Float
+getPlanesToRemove grid level height cellCount =
+    if level >= height then
+        []
+
+    else if isPlaneFull grid cellCount level then
+        level :: getPlanesToRemove grid (level + 1) height cellCount
+
+    else
+        getPlanesToRemove grid (level + 1) height cellCount
+
+
+filterOutPlanes : Grid -> List Float -> Grid
+filterOutPlanes grid planes =
+    case planes of
+        plane :: rest ->
+            filterOutPlanes (List.filter (\cell -> cell.position.y /= plane) grid) rest
+
+        [] ->
+            grid
+
+
+clearPlanes : Grid -> Int -> Float -> ( Grid, Int )
+clearPlanes grid cellCount height =
+    ( filterOutPlanes grid <| getPlanesToRemove grid 0 height cellCount, List.length <| getPlanesToRemove grid 0 height cellCount )

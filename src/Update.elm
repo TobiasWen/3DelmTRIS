@@ -1,7 +1,7 @@
 module Update exposing (update)
 
 import Dimensions exposing (WorldDimensions, calculateTopCenter)
-import Grid exposing (Direction(..), checkGridFallDownCollision, checkGridMovementCollision, checkGridOverlap, mergeGrids)
+import Grid exposing (Direction(..), Grid, checkGridFallDownCollision, checkGridMovementCollision, checkGridOverlap, clearPlanes, mergeGrids)
 import Input exposing (Key(..), Mouse)
 import Messages exposing (Msg(..))
 import Model exposing (GameState(..), Model)
@@ -45,7 +45,7 @@ setUpcomingTetroid model tetroid =
 
 handleTick : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 handleTick mc =
-    checkForNewTetroid mc |> checkForCollision
+    checkForNewTetroid mc |> checkForCollision |> checkForClear
 
 
 checkForNewTetroid : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
@@ -71,7 +71,23 @@ checkForCollision ( model, cmd ) =
                 ( { model | activeTetroid = Just (fallDown tetroid) }, cmd )
 
         Nothing ->
-            ( model, Cmd.none )
+            ( model, cmd )
+
+
+checkForClear : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+checkForClear ( model, cmd ) =
+    let
+        clearedGridAndCount : ( Grid, Int )
+        clearedGridAndCount =
+            clearPlanes model.grid (round <| model.dimensions.width * model.dimensions.depth) model.dimensions.height
+    in
+    if model.activeTetroid == Nothing then
+        case clearedGridAndCount of
+            ( grid, _ ) ->
+                ( { model | grid = grid }, cmd )
+
+    else
+        ( model, cmd )
 
 
 handleKeyInput : Model -> Key -> Model
