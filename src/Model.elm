@@ -27,6 +27,7 @@ type alias Model =
     , tickRateMs : Float
     , gameOver : Bool
     , mousePosition : { x : Float, y : Float }
+    , windowSize : { width : Int, height : Int }
     }
 
 
@@ -49,6 +50,7 @@ initialModel =
       , tickRateMs = 1000
       , gameOver = False
       , mousePosition = { x = 0, y = 0 }
+      , windowSize = { width = 1600, height = 1000 }
       }
     , Random.generate Start tetroidGenerator
     )

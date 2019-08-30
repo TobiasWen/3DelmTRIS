@@ -1,5 +1,6 @@
 module Messages exposing (Msg(..))
 
+import Browser.Dom exposing (Element)
 import Grid exposing (Direction)
 import Input exposing (Key, Mouse)
 import Rotation exposing (Axis)
@@ -14,3 +15,4 @@ type Msg
     | UpcomingTetroid Tetroid
     | KeyEvent Key
     | MouseEvent Mouse
+    | GetWindowsSize Int Int

@@ -29,6 +29,16 @@ update msg model =
         MouseEvent mouse ->
             ( { model | mousePosition = mouse }, Cmd.none )
 
+        GetWindowsSize windowWidth windowHeight ->
+            ( { model
+                | windowSize =
+                    { width = windowWidth
+                    , height = windowHeight
+                    }
+              }
+            , Cmd.none
+            )
+
         _ ->
             ( model, Cmd.none )
 
