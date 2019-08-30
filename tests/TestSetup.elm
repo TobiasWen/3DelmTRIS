@@ -1,4 +1,4 @@
-module TestSetup exposing (blueTetroidInTopCenter, cell, orangeTetroidInTopCenter, position, setupPlanesOneLevel, setupTetroid, worldDimensions)
+module TestSetup exposing (blueTetroidInTopCenter, cell, orangeTetroidInTopCenter, planesFourLevelWithAdditionalCells, planesFourLevelWithOneAdditionalCell, position, secondLevelPlaneWithBlocksBelowAndAbove, setupPlanesFourLevel, setupPlanesOneLevel, setupTetroid, worldDimensions)
 
 import Dimensions exposing (..)
 import Expect exposing (Expectation)
@@ -40,6 +40,32 @@ worldDimensions =
 setupPlanesOneLevel : Grid
 setupPlanesOneLevel =
     createFilledGrid (worldDimensions.height - 1) worldDimensions
+
+
+setupPlanesFourLevel : Grid
+setupPlanesFourLevel =
+    mergeGrids (mergeGrids (createFilledGrid (worldDimensions.height - 1) worldDimensions) (createFilledGrid (worldDimensions.height - 2) worldDimensions))
+        (mergeGrids (createFilledGrid (worldDimensions.height - 3) worldDimensions) (createFilledGrid (worldDimensions.height - 4) worldDimensions))
+
+
+planesFourLevelWithOneAdditionalCell : Grid
+planesFourLevelWithOneAdditionalCell =
+    { color = Color 255 255 255, position = Position 0 (worldDimensions.height - 5) 0 } :: setupPlanesFourLevel
+
+
+planesFourLevelWithAdditionalCells : Grid
+planesFourLevelWithAdditionalCells =
+    { color = Color 255 255 255, position = Position 0 (worldDimensions.height - 5) 0 }
+        :: { color = Color 255 255 255, position = Position 0 (worldDimensions.height - 6) 0 }
+        :: { color = Color 255 255 255, position = Position 0 (worldDimensions.height - 7) 0 }
+        :: setupPlanesFourLevel
+
+
+secondLevelPlaneWithBlocksBelowAndAbove : Grid
+secondLevelPlaneWithBlocksBelowAndAbove =
+    { color = Color 255 255 255, position = Position 0 (worldDimensions.height - 1) 0 }
+        :: { color = Color 0 0 0, position = Position 0 (worldDimensions.height - 3) 0 }
+        :: createFilledGrid (worldDimensions.height - 2) worldDimensions
 
 
 blueTetroidInTopCenter : Tetroid

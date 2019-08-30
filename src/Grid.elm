@@ -138,6 +138,32 @@ filterOutPlanes grid planes =
             grid
 
 
+shiftRemainingGrid : Grid -> List Float -> Grid
+shiftRemainingGrid grid removedPlanes =
+    let
+        shiftCellByOne : Cell -> Cell
+        shiftCellByOne c =
+            { color = c.color, position = { x = c.position.x, y = c.position.y + 1, z = c.position.z } }
+
+        shift : List Float -> Grid -> Grid
+        shift rP g =
+            case rP of
+                currentLevel :: rest ->
+                    List.filter (\cell -> cell.position.y < currentLevel) g
+                        |> List.map shiftCellByOne
+                        |> mergeGrids (List.filter (\cell -> cell.position.y > currentLevel) g)
+                        |> shift rest
+
+                [] ->
+                    g
+    in
+    shift (removedPlanes |> List.sort) grid
+
+
 clearPlanes : Grid -> Int -> Float -> ( Grid, Int )
 clearPlanes grid cellCount height =
-    ( filterOutPlanes grid <| getPlanesToRemove grid 0 height cellCount, List.length <| getPlanesToRemove grid 0 height cellCount )
+    let
+        planesToRemove =
+            getPlanesToRemove grid 0 height cellCount
+    in
+    ( shiftRemainingGrid (filterOutPlanes grid <| planesToRemove) planesToRemove, List.length <| planesToRemove )
