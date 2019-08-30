@@ -33,8 +33,7 @@ type alias Model =
 
 
 type alias Score =
-    { id : Int
-    , name : String
+    { name : String
     , score : Int
     }
 
@@ -45,14 +44,6 @@ initialWorldDimensions =
     , height = 14
     , depth = 7
     }
-
-
-testHighscores : List Score
-testHighscores =
-    [ Score 1 "Tim" 100
-    , Score 2 "Banana" 100
-    , Score 3 "Orange" 100
-    ]
 
 
 initialModel : ( Model, Cmd Msg )
@@ -67,7 +58,8 @@ initialModel =
       , gameOver = False
       , mousePosition = { x = 0, y = 0 }
       , windowSize = { width = 1600, height = 1000 }
-      , highscores = testHighscores
+      , highscores = Loading
+      , score = 0
       }
     , Random.generate Start tetroidGenerator
     )

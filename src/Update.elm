@@ -75,7 +75,7 @@ checkForCollision ( model, cmd ) =
                 ( { model | gameState = Stopped, gameOver = True }, cmd )
 
             else if checkGridFallDownCollision tetroid.grid model.grid || isCollidingWithFloor tetroid model.dimensions then
-                ( { model | grid = mergeGrids model.grid tetroid.grid, activeTetroid = Nothing, fastFallDown = False }, cmd )
+                ( { model | grid = mergeGrids model.grid tetroid.grid, activeTetroid = Nothing, fastFallDown = False, score = model.score + 100 }, cmd )
 
             else
                 ( { model | activeTetroid = Just (fallDown tetroid) }, cmd )
@@ -93,8 +93,22 @@ checkForClear ( model, cmd ) =
     in
     if model.activeTetroid == Nothing then
         case clearedGridAndCount of
-            ( grid, _ ) ->
-                ( { model | grid = grid }, cmd )
+            ( grid, clearedPlaneCount ) ->
+                case clearedPlaneCount of
+                    1 ->
+                        ( { model | grid = grid, score = model.score + 1000 }, cmd )
+
+                    2 ->
+                        ( { model | grid = grid, score = model.score + 3000 }, cmd )
+
+                    3 ->
+                        ( { model | grid = grid, score = model.score + 5000 }, cmd )
+
+                    4 ->
+                        ( { model | grid = grid, score = model.score + 10000 }, cmd )
+
+                    _ ->
+                        ( model, cmd )
 
     else
         ( model, cmd )
