@@ -5,6 +5,8 @@ import Grid exposing (Cell, Color, Grid, Position)
 import Json.Decode
 import Messages exposing (Msg(..))
 import Random exposing (..)
+import Requests exposing (getScoresCmd)
+import Score exposing (Scores, ScoresData(..))
 import Tetroids exposing (..)
 
 
@@ -35,6 +37,7 @@ type alias Model =
 type alias Score =
     { name : String
     , score : Int
+    , highscores : ScoresData
     }
 
 
@@ -60,8 +63,9 @@ initialModel =
       , windowSize = { width = 1600, height = 1000 }
       , highscores = Loading
       , score = 0
+      , highscores = Loading
       }
-    , Random.generate Start tetroidGenerator
+    , Cmd.batch [ Random.generate Start tetroidGenerator, getScoresCmd ]
     )
 
 

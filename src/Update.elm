@@ -2,12 +2,14 @@ module Update exposing (update)
 
 import Dimensions exposing (WorldDimensions, calculateTopCenter)
 import Grid exposing (Direction(..), Grid, checkGridFallDownCollision, checkGridMovementCollision, checkGridOverlap, clearPlanes, mergeGrids)
+import Http
 import Input exposing (Key(..), Mouse)
 import Messages exposing (Msg(..))
 import Model exposing (GameState(..), Model)
 import Movement exposing (calculateWallKickVector, fallDown, isCollidingWithFloor, moveTetroid, spawnTetroid, translateTetroid)
 import Random exposing (..)
 import Rotation exposing (Axis(..), canRotate, rotateTetroid)
+import Score exposing (Scores, ScoresData(..), clearPointsFourPlanes, clearPointsOnePlane, clearPointsThreePlanes, clearPointsTwoPlanes, pointsBlockPlaced, scoreListDecoder)
 import Tetroids exposing (Tetroid, tetroidGenerator)
 
 
@@ -38,6 +40,9 @@ update msg model =
               }
             , Cmd.none
             )
+
+        ScoreResponse response ->
+            handleScoreResponse response ( model, Cmd.none )
 
         _ ->
             ( model, Cmd.none )
@@ -75,7 +80,7 @@ checkForCollision ( model, cmd ) =
                 ( { model | gameState = Stopped, gameOver = True }, cmd )
 
             else if checkGridFallDownCollision tetroid.grid model.grid || isCollidingWithFloor tetroid model.dimensions then
-                ( { model | grid = mergeGrids model.grid tetroid.grid, activeTetroid = Nothing, fastFallDown = False, score = model.score + 100 }, cmd )
+                ( { model | grid = mergeGrids model.grid tetroid.grid, activeTetroid = Nothing, fastFallDown = False, score = model.score + pointsBlockPlaced }, cmd )
 
             else
                 ( { model | activeTetroid = Just (fallDown tetroid) }, cmd )
@@ -96,22 +101,32 @@ checkForClear ( model, cmd ) =
             ( grid, clearedPlaneCount ) ->
                 case clearedPlaneCount of
                     1 ->
-                        ( { model | grid = grid, score = model.score + 1000 }, cmd )
+                        ( { model | grid = grid, score = model.score + clearPointsOnePlane }, cmd )
 
                     2 ->
-                        ( { model | grid = grid, score = model.score + 3000 }, cmd )
+                        ( { model | grid = grid, score = model.score + clearPointsTwoPlanes }, cmd )
 
                     3 ->
-                        ( { model | grid = grid, score = model.score + 5000 }, cmd )
+                        ( { model | grid = grid, score = model.score + clearPointsThreePlanes }, cmd )
 
                     4 ->
-                        ( { model | grid = grid, score = model.score + 10000 }, cmd )
+                        ( { model | grid = grid, score = model.score + clearPointsFourPlanes }, cmd )
 
                     _ ->
                         ( model, cmd )
 
     else
         ( model, cmd )
+
+
+handleScoreResponse : Result Http.Error Scores -> ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+handleScoreResponse response ( model, cmd ) =
+    case response of
+        Err error ->
+            ( { model | highscores = Error error }, cmd )
+
+        Ok scores ->
+            ( { model | highscores = Loaded scores }, cmd )
 
 
 handleKeyInput : Model -> Key -> Model
