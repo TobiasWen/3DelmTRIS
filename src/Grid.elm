@@ -1,4 +1,4 @@
-module Grid exposing (Cell, Color, Direction(..), Grid, Position, addPositions, checkGridFallDownCollision, checkGridMovementCollision, checkGridOverlap, clearPlanes, filterOutPlanes, getPlanesToRemove, isPlaneFull, isPositionNextToGrid, mergeGrids, setPosition, subtractPositions)
+module Grid exposing (Cell, Color, Direction(..), Grid, Position, addPositions, checkGridFallDownCollision, checkGridMovementCollision, checkGridOverlap, clearPlanes, filterOutPlanes, getPlanesToRemove, isPlaneFull, isPositionNextToGrid, mergeGrids, reColorGrid, setPosition, subtractPositions)
 
 
 type Direction
@@ -167,3 +167,19 @@ clearPlanes grid cellCount height =
             getPlanesToRemove grid 0 height cellCount
     in
     ( shiftRemainingGrid (filterOutPlanes grid <| planesToRemove) planesToRemove, List.length <| planesToRemove )
+
+
+reColorGrid : Color -> Grid -> Grid
+reColorGrid color grid =
+    case grid of
+        [] ->
+            []
+
+        [ x ] ->
+            [ Cell color x.position ]
+
+        x :: xs ->
+            List.concat
+                [ [ Cell color x.position ]
+                , reColorGrid color xs
+                ]
