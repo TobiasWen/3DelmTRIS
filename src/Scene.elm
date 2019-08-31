@@ -1,6 +1,6 @@
 module Scene exposing (renderGameScene, renderNextTetroidScene)
 
-import Grid exposing (Color, Grid, Position, mergeGrids)
+import Grid exposing (Color, Grid, Position, checkGridFallDownCollision, mergeGrids, reColorGrid)
 import Html exposing (Html, br, button, div, h1, h2, p, span, text)
 import Html.Attributes exposing (class, disabled, height, id, style, width)
 import Html.Events exposing (onClick)
@@ -9,8 +9,12 @@ import Math.Matrix4 as Mat4 exposing (Mat4)
 import Math.Vector3 as Vec3 exposing (Vec3, toRecord, vec3)
 import Messages exposing (Msg)
 import Model exposing (Model)
-import WebGL exposing (Mesh, Shader)
+import Movement exposing (fallDown, isCollidingWithFloor)
+import Tetroids exposing (Tetroid)
+import WebGL exposing (Mesh, Shader, alpha)
+import WebGL.Settings exposing (Setting)
 import WebGL.Settings.Blend exposing (..)
+import WebGL.Settings.DepthTest exposing (..)
 
 
 renderGameScene : Model -> Html Msg
@@ -27,9 +31,19 @@ renderGameScene model =
                         Nothing ->
                             model.grid
                     )
+                ++ cellsToWebGLEntetiesAlpha 1
+                    False
+                    model
+                    (case model.activeTetroid of
+                        Just tetroid ->
+                            previewTetroid model tetroid
 
-        settings =
-            [ WebGL.alpha True, WebGL.antialias, WebGL.depth 1 ]
+                        Nothing ->
+                            []
+                    )
+
+        options =
+            [ WebGL.alpha True, WebGL.antialias, WebGL.depth 1, WebGL.preserveDrawingBuffer, WebGL.clearColor 0 0 0 0 ]
 
         --dimensions to calc responsiveness
         mainWrapperWidth =
@@ -42,7 +56,7 @@ renderGameScene model =
             fitGameScenee { width = round leftColumnWidth - 20, height = model.windowSize.height - 100 }
     in
     WebGL.toHtmlWith
-        settings
+        options
         [ width (gameSceneDimensions.width - 20)
         , height (gameSceneDimensions.height - 50)
         , style "object-fit" "cover"
@@ -72,11 +86,37 @@ fitGameScenee canvasSize =
         { width = canvasSize.width, height = round (height * toFloat canvasSize.width / width) }
 
 
+previewTetroid : Model -> Tetroid -> Grid
+previewTetroid model activeTetroid =
+    let
+        -- set down till collision
+        downedTetroid =
+            bottomOutTetroid model activeTetroid
+    in
+    reColorGrid (Color 255 10 10) downedTetroid
+
+
+bottomOutTetroid : Model -> Tetroid -> Grid
+bottomOutTetroid model tetroid =
+    if checkGridFallDownCollision tetroid.grid model.grid || isCollidingWithFloor tetroid model.dimensions then
+        tetroid.grid
+
+    else
+        bottomOutTetroid model
+            (case model.activeTetroid of
+                Just tetroidY ->
+                    fallDown tetroid
+
+                Nothing ->
+                    tetroid
+            )
+
+
 renderNextTetroidScene : Model -> Html Msg
 renderNextTetroidScene model =
     let
-        settings =
-            [ WebGL.alpha True, WebGL.antialias, WebGL.depth 1 ]
+        options =
+            [ WebGL.alpha True, WebGL.antialias, WebGL.depth 1, WebGL.preserveDrawingBuffer ]
 
         mainWrapperWidth =
             toFloat model.windowSize.width * 0.9
@@ -87,7 +127,7 @@ renderNextTetroidScene model =
     div []
         [ h2 [ style "text-align" "left" ] [ text "Next Tetroid" ]
         , WebGL.toHtmlWith
-            settings
+            options
             [ width (round rightColumwidth)
             , height (round rightColumwidth)
             , style "margin" "auto"
@@ -149,7 +189,7 @@ manipulatePerspective isStaticCamera zoom width height model =
                 0.6
 
             eye =
-                vec3 (0.1 * cos (degrees (model.mousePosition.x * sensitivity))) -(0.5 - model.mousePosition.y / (height * 2)) (0.1 * sin (degrees (model.mousePosition.x * sensitivity)))
+                vec3 (0.1 * cos (degrees 95)) 0 (0.1 * sin (degrees 95))
                     |> Vec3.normalize
                     |> Vec3.scale zoom
         in
@@ -203,7 +243,7 @@ cellsToWebGLEnteties isStaticCamera model cells =
             []
 
         [ x ] ->
-            [ WebGL.entity
+            [ WebGL.entityWith [ default ]
                 vertexShader
                 fragmentShader
                 (cellToMesh x)
@@ -212,13 +252,39 @@ cellsToWebGLEnteties isStaticCamera model cells =
 
         x :: xs ->
             concat
-                [ [ WebGL.entity
+                [ [ WebGL.entityWith [ default ]
                         vertexShader
                         fragmentShader
                         (cellToMesh x)
                         (uniforms isStaticCamera model)
                   ]
                 , cellsToWebGLEnteties isStaticCamera model xs
+                ]
+
+
+cellsToWebGLEntetiesAlpha : Float -> Bool -> Model -> List Cell -> List WebGL.Entity
+cellsToWebGLEntetiesAlpha alpha isStaticCamera model cells =
+    case cells of
+        [] ->
+            []
+
+        [ x ] ->
+            [ WebGL.entityWith [ add dstColor srcColor, default ]
+                vertexShader
+                fragmentShader
+                (cellToMesh x)
+                (uniforms isStaticCamera model)
+            ]
+
+        x :: xs ->
+            concat
+                [ [ WebGL.entityWith [ add dstColor srcColor, default ]
+                        vertexShader
+                        fragmentShader
+                        (cellToMesh x)
+                        (uniforms isStaticCamera model)
+                  ]
+                , cellsToWebGLEntetiesAlpha alpha isStaticCamera model xs
                 ]
 
 
@@ -279,12 +345,12 @@ cellToMesh cell =
         shade2 =
             Vec3.scale 0.9 shade1
     in
-    [ face cellColor rft rfb rbb rbt -- right
-    , face shade2 rft rfb lfb lft -- front
-    , face shade1 rft lft lbt rbt -- top
-    , face shade1 rfb lfb lbb rbb -- bot
-    , face cellColor lft lfb lbb lbt --left
-    , face shade2 rbt rbb lbb lbt -- back
+    [ flatFace cellColor rft rfb rbb rbt -- right
+    , flatFace shade2 rft rfb lfb lft -- front
+    , flatFace shade1 rft lft lbt rbt -- top
+    , flatFace shade1 rfb lfb lbb rbb -- bot
+    , flatFace cellColor lft lfb lbb lbt --left
+    , flatFace shade2 rbt rbb lbb lbt -- back
     ]
         |> List.concat
         |> WebGL.triangles
@@ -309,10 +375,10 @@ playareaBase : Model -> Mesh Vertex
 playareaBase model =
     let
         color =
-            vec3 50 50 50
+            vec3 100 100 100
 
         plateheight =
-            1.5
+            1.25
 
         --right front top
         rft =
@@ -353,7 +419,7 @@ playareaBase model =
             Vec3.scale 0.9 shade1
     in
     [ flatFace color rft rfb rbb rbt -- right
-    , flatFace (vec3 255 100 100) rft rfb lfb lft -- front
+    , flatFace (vec3 255 50 50) rft rfb lfb lft -- front
     , flatFace shade1 rft lft lbt rbt -- top
     , flatFace shade1 rfb lfb lbb rbb -- bot
     , flatFace color lft lfb lbb lbt --left
