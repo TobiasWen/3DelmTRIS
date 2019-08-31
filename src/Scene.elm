@@ -11,6 +11,7 @@ import Messages exposing (Msg)
 import Model exposing (Model)
 import Movement exposing (fallDown, isCollidingWithFloor)
 import Tetroids exposing (Tetroid)
+import UI exposing (myh2)
 import WebGL exposing (Mesh, Shader, alpha)
 import WebGL.Settings exposing (Setting)
 import WebGL.Settings.Blend exposing (..)
@@ -122,16 +123,15 @@ renderNextTetroidScene model =
             toFloat model.windowSize.width * 0.9
 
         rightColumwidth =
-            mainWrapperWidth * 0.19
+            mainWrapperWidth * 0.15
     in
     div []
-        [ h2 [ style "text-align" "left" ] [ text "Next Tetroid" ]
+        [ h2 UI.myh2 [ text "Next Tetroid" ]
         , WebGL.toHtmlWith
             options
             [ width (round rightColumwidth)
             , height (round rightColumwidth)
             , style "margin" "auto"
-            , style "background" "lightgrey"
             ]
             (cellsToWebGLEnteties True
                 model
@@ -269,11 +269,7 @@ cellsToWebGLEntetiesAlpha alpha isStaticCamera model cells =
             []
 
         [ x ] ->
-<<<<<<< HEAD
-            [ WebGL.entityWith [ add dstColor srcColor, default ]
-=======
             [ WebGL.entityWith [ add dstColor oneMinusDstAlpha, default ]
->>>>>>> #21
                 vertexShader
                 fragmentShader
                 (cellToMesh x)
@@ -282,11 +278,7 @@ cellsToWebGLEntetiesAlpha alpha isStaticCamera model cells =
 
         x :: xs ->
             concat
-<<<<<<< HEAD
-                [ [ WebGL.entityWith [ add dstColor srcColor, default ]
-=======
                 [ [ WebGL.entityWith [ add dstColor oneMinusDstAlpha, default ]
->>>>>>> #21
                         vertexShader
                         fragmentShader
                         (cellToMesh x)
@@ -383,7 +375,7 @@ playareaBase : Model -> Mesh Vertex
 playareaBase model =
     let
         color =
-            vec3 100 100 100
+            vec3 150 150 150
 
         plateheight =
             1.25
@@ -427,7 +419,7 @@ playareaBase model =
             Vec3.scale 0.9 shade1
     in
     [ flatFace color rft rfb rbb rbt -- right
-    , flatFace (vec3 255 50 50) rft rfb lfb lft -- front
+    , flatFace (vec3 255 190 70) rft rfb lfb lft -- front
     , flatFace shade1 rft lft lbt rbt -- top
     , flatFace shade1 rfb lfb lbb rbb -- bot
     , flatFace color lft lfb lbb lbt --left
@@ -441,7 +433,7 @@ playareaHulle : Model -> Mesh Vertex
 playareaHulle model =
     let
         color =
-            vec3 150 150 150
+            vec3 175 175 175
 
         --right front top
         rft =
