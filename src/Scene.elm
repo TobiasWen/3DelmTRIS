@@ -269,7 +269,7 @@ cellsToWebGLEntetiesAlpha alpha isStaticCamera model cells =
             []
 
         [ x ] ->
-            [ WebGL.entityWith [ add dstColor srcColor, default ]
+            [ WebGL.entityWith [ add dstColor oneMinusDstAlpha, default ]
                 vertexShader
                 fragmentShader
                 (cellToMesh x)
@@ -278,7 +278,7 @@ cellsToWebGLEntetiesAlpha alpha isStaticCamera model cells =
 
         x :: xs ->
             concat
-                [ [ WebGL.entityWith [ add dstColor srcColor, default ]
+                [ [ WebGL.entityWith [ add dstColor oneMinusDstAlpha, default ]
                         vertexShader
                         fragmentShader
                         (cellToMesh x)
