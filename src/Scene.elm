@@ -131,7 +131,7 @@ uniforms isStaticCamera model =
 
     else
         { rotation = Mat4.identity
-        , perspective = manipulatePerspective isStaticCamera 15 1200 1000 model
+        , perspective = manipulatePerspective isStaticCamera 20 1200 1000 model
         , camera = Mat4.makeLookAt (vec3 (model.dimensions.width / 2) 0 (model.dimensions.depth / 2)) (vec3 0 0 0) (vec3 0 -1 0)
         , shade = 0.8
         }
@@ -149,12 +149,12 @@ manipulatePerspective isStaticCamera zoom width height model =
                 0.6
 
             eye =
-                vec3 (0.1 * cos (degrees (model.mousePosition.x * sensitivity))) 0 (0.1 * sin (degrees (model.mousePosition.x * sensitivity)))
+                vec3 (0.1 * cos (degrees (model.mousePosition.x * sensitivity))) -(0.5 - model.mousePosition.y / (height * 2)) (0.1 * sin (degrees (model.mousePosition.x * sensitivity)))
                     |> Vec3.normalize
                     |> Vec3.scale zoom
         in
         Mat4.mul
-            (Mat4.makePerspective 50 (width / height) 0.01 1000)
+            (Mat4.makePerspective 40 (width / height) 0.01 1000)
             (Mat4.makeLookAt eye
                 (case model.upcomingTetroid of
                     Just tetroid ->
@@ -172,12 +172,12 @@ manipulatePerspective isStaticCamera zoom width height model =
                 0.3
 
             eye =
-                vec3 (0.2 * cos (degrees (model.mousePosition.x * sensitivity))) -(0.5 - model.mousePosition.y / height) (0.2 * sin (degrees (model.mousePosition.x * sensitivity)))
+                vec3 (0.2 * cos (degrees (model.mousePosition.x * sensitivity))) -(0.25 - model.mousePosition.y / (height * 1.25)) (0.2 * sin (degrees (model.mousePosition.x * sensitivity)))
                     |> Vec3.normalize
                     |> Vec3.scale zoom
         in
         Mat4.mul
-            (Mat4.makePerspective 80 (width / height) 0.01 1000)
+            (Mat4.makePerspective 60 (width / height) 0.01 1000)
             (Mat4.makeLookAt eye (vec3 0 -(model.dimensions.height / 2) 0) Vec3.j)
 
 
@@ -352,12 +352,12 @@ playareaBase model =
         shade2 =
             Vec3.scale 0.9 shade1
     in
-    [ face color rft rfb rbb rbt -- right
-    , face shade2 rft rfb lfb lft -- front
-    , face shade1 rft lft lbt rbt -- top
-    , face shade1 rfb lfb lbb rbb -- bot
-    , face color lft lfb lbb lbt --left
-    , face shade2 rbt rbb lbb lbt -- back
+    [ flatFace color rft rfb rbb rbt -- right
+    , flatFace (vec3 255 100 100) rft rfb lfb lft -- front
+    , flatFace shade1 rft lft lbt rbt -- top
+    , flatFace shade1 rfb lfb lbb rbb -- bot
+    , flatFace color lft lfb lbb lbt --left
+    , flatFace shade2 rbt rbb lbb lbt -- back
     ]
         |> List.concat
         |> WebGL.triangles
@@ -367,7 +367,7 @@ playareaHulle : Model -> Mesh Vertex
 playareaHulle model =
     let
         color =
-            vec3 175 175 175
+            vec3 150 150 150
 
         --right front top
         rft =
@@ -402,17 +402,17 @@ playareaHulle model =
             vec3 0 model.dimensions.height model.dimensions.depth
 
         shade1 =
-            Vec3.scale 0.9 color
+            Vec3.scale 0.8 color
 
         shade2 =
             Vec3.scale 0.9 shade1
     in
-    [ face color rft rfb rbb rbt -- right
-    , face shade2 rft rfb lfb lft -- front
-    , face shade1 rft lft lbt rbt -- top
-    , face shade1 rfb lfb lbb rbb -- bot
-    , face color lft lfb lbb lbt --left
-    , face shade2 rbt rbb lbb lbt -- back
+    [ flatFace shade1 rft rfb rbb rbt -- right
+    , flatFace color rft rfb lfb lft -- front
+    , flatFace shade2 rft lft lbt rbt -- top
+    , flatFace shade2 rfb lfb lbb rbb -- bot
+    , flatFace shade1 lft lfb lbb lbt --left
+    , flatFace shade2 rbt rbb lbb lbt -- back
     ]
         |> List.concat
         |> WebGL.triangles
@@ -429,6 +429,17 @@ face color a b c d =
     in
     [ ( vertex2 a, vertex b, vertex2 c )
     , ( vertex2 c, vertex d, vertex2 a )
+    ]
+
+
+flatFace : Vec3 -> Vec3 -> Vec3 -> Vec3 -> Vec3 -> List ( Vertex, Vertex, Vertex )
+flatFace color a b c d =
+    let
+        vertex position =
+            Vertex (Vec3.scale (1 / 255) color) position
+    in
+    [ ( vertex a, vertex b, vertex c )
+    , ( vertex c, vertex d, vertex a )
     ]
 
 
