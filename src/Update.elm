@@ -68,8 +68,12 @@ setUpcomingTetroid model tetroid =
 
 
 handleTick : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
-handleTick mc =
-    checkForNewTetroid mc |> checkForCollision |> checkForClear
+handleTick ( model, cmd ) =
+    if model.gameOver then
+        ( model, cmd )
+
+    else
+        checkForNewTetroid ( model, cmd ) |> checkForCollision |> checkForClear
 
 
 checkForNewTetroid : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
