@@ -5,7 +5,7 @@ import Grid exposing (Direction)
 import Http
 import Input exposing (Key, Mouse)
 import Rotation exposing (Axis)
-import Score exposing (Scores)
+import Score exposing (Score, Scores)
 import Tetroids exposing (Tetroid)
 
 
@@ -19,3 +19,5 @@ type Msg
     | MouseEvent Mouse
     | GetWindowsSize Int Int
     | ScoreResponse (Result Http.Error Scores)
+    | SendScore Score
+    | NewName String

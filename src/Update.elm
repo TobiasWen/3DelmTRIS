@@ -5,9 +5,10 @@ import Grid exposing (Direction(..), Grid, checkGridFallDownCollision, checkGrid
 import Http
 import Input exposing (Key(..), Mouse)
 import Messages exposing (Msg(..))
-import Model exposing (GameState(..), Model)
+import Model exposing (GameState(..), Model, initialModel)
 import Movement exposing (calculateWallKickVector, fallDown, isCollidingWithFloor, moveTetroid, spawnTetroid, translateTetroid)
 import Random exposing (..)
+import Requests exposing (postScoreCmd)
 import Rotation exposing (Axis(..), canRotate, rotateTetroid)
 import Score exposing (Scores, ScoresData(..), clearPointsFourPlanes, clearPointsOnePlane, clearPointsThreePlanes, clearPointsTwoPlanes, pointsBlockPlaced, scoreListDecoder)
 import Tetroids exposing (Tetroid, tetroidGenerator)
@@ -43,6 +44,14 @@ update msg model =
 
         ScoreResponse response ->
             handleScoreResponse response ( model, Cmd.none )
+
+        NewName name ->
+            ( { model | playerName = name }, Cmd.none )
+
+        SendScore score ->
+            case initialModel of
+                ( mod, cmd ) ->
+                    ( mod, Cmd.batch [ cmd, postScoreCmd score ] )
 
         _ ->
             ( model, Cmd.none )

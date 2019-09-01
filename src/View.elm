@@ -10,7 +10,7 @@ import Messages exposing (Msg)
 import Model exposing (Model)
 import Scene exposing (renderGameScene, renderNextTetroidScene)
 import Score exposing (ScoresData(..))
-import UI exposing (renderControls, renderGameOverText)
+import UI exposing (renderControls, renderGameOverScreen)
 
 
 view : Model -> Html Msg
@@ -22,7 +22,7 @@ view model =
         , style "width" "100%"
         , style "height" "100%"
         , style "background-color" "#E1F0F0"
-        , style "background-image" "linear-gradient(to left bottom, #f9c6e3, #e8d1f4, #d9dcfc, #d1e5fb, #d3ebf6, #d2eef6, #d1f1f5, #d2f4f3, #c6f7f5, #b9faf6, #acfcf7, #9efff7)"
+        , style "background" "linear-gradient(45deg, #fc00ff, #00dbde)"
         , style "color" "#EEE"
         ]
         [ Styled.toUnstyled
@@ -40,24 +40,29 @@ view model =
             ]
             [ div [ style "flex" "60%" ]
                 [ h1
-                    [ style "color" "#00A58E"
+                    [ style "color" "rgb(235, 255, 252)"
                     , style "font-size" "70px"
                     , style "font-style" "normal"
                     , style "font-weight" "700"
                     , style "line-height" "28pt"
+                    , style "text-shadow" "rgb(0, 255, 219) 2px 2px 8px"
                     ]
                     [ text
                         "3D"
                     , span [ style "font-family" "\"Source Sans Pro\", \"Trebuchet MS\", \"Lucida Grande\", \"Bitstream Vera Sans\", \"Helvetica Neue\", sans-serif", style "font-weight" "200" ] [ text "elm" ]
                     , text "TRIS"
                     ]
-                , Scene.renderGameScene model
+                , if model.gameOver then
+                    UI.renderGameOverScreen model
+
+                  else
+                    Scene.renderGameScene model
                 ]
             , div
-                [ style "background" "#523D98CC"
+                [ style "background" "rgba(4, 4, 4, 0.8)"
                 , style "padding" "0 40px 0 40px"
                 , style "height" "100vh"
-                , style "box-shadow" "0px 0px 12px 5px rgba(0,0,0,0.20)"
+                , style "box-shadow" "rgba(0, 0, 0, 0.2) 0px 0px 12px 5px"
                 ]
                 [ UI.renderscore model.score
                 , case model.highscores of

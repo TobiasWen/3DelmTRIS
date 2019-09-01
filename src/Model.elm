@@ -32,6 +32,7 @@ type alias Model =
     , windowSize : { width : Int, height : Int }
     , highscores : ScoresData
     , score : Int
+    , playerName : String
     }
 
 
@@ -57,6 +58,7 @@ initialModel =
       , windowSize = { width = 1600, height = 1000 }
       , highscores = Loading
       , score = 0
+      , playerName = ""
       }
     , Cmd.batch [ Random.generate Start tetroidGenerator, getScoresCmd ]
     )
