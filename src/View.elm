@@ -9,6 +9,7 @@ import Html.Styled as Styled
 import Messages exposing (Msg)
 import Model exposing (Model)
 import Scene exposing (renderGameScene, renderNextTetroidScene)
+import Score exposing (ScoresData(..))
 import UI exposing (renderControls, renderGameOverText)
 
 
@@ -17,6 +18,9 @@ view model =
     div
         [ style "font-family" "\"HelveticaNeue-Light\", \"Helvetica Neue Light\", \"Helvetica Neue\", Helvetica, Arial, \"Lucida Grande\", sans-serif"
         , style "font-weight" "250"
+        , style "position" "absolute"
+        , style "width" "100%"
+        , style "height" "100%"
         , style "background-color" "#E1F0F0"
         , style "background-image" "linear-gradient(to left bottom, #f9c6e3, #e8d1f4, #d9dcfc, #d1e5fb, #d3ebf6, #d2eef6, #d1f1f5, #d2f4f3, #c6f7f5, #b9faf6, #acfcf7, #9efff7)"
         , style "color" "#EEE"
@@ -33,8 +37,6 @@ view model =
             , style "display" "flex"
             , style "text-align" "center"
             , style "margin" "auto"
-            , style "max-height" (String.fromFloat (toFloat (model.windowSize.height + 70)) ++ "px")
-            , style "max-width" "1500px"
             ]
             [ div [ style "flex" "60%" ]
                 [ h1
@@ -48,17 +50,22 @@ view model =
                         "3D"
                     , span [ style "font-family" "\"Source Sans Pro\", \"Trebuchet MS\", \"Lucida Grande\", \"Bitstream Vera Sans\", \"Helvetica Neue\", sans-serif", style "font-weight" "200" ] [ text "elm" ]
                     , text "TRIS"
-                    , UI.renderGameOverText model.gameOver
                     ]
                 , Scene.renderGameScene model
                 ]
             , div
                 [ style "background" "#523D98CC"
-                , style "padding" "40px"
+                , style "padding" "0 40px 0 40px"
+                , style "height" "100vh"
                 , style "box-shadow" "0px 0px 12px 5px rgba(0,0,0,0.20)"
                 ]
-                [ UI.renderscore { id = 0, name = "", score = 5000 }
-                , UI.renderHighscore model.highscores
+                [ UI.renderscore model.score
+                , case model.highscores of
+                    Loaded scores ->
+                        UI.renderHighscore scores.scores
+
+                    _ ->
+                        UI.renderHighscore []
                 , Scene.renderNextTetroidScene model
                 , UI.renderControls
                 ]

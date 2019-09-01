@@ -1,4 +1,4 @@
-module Model exposing (GameState(..), Model, Score, getTickRate, initialModel)
+module Model exposing (GameState(..), Model, getTickRate, initialModel)
 
 import Dimensions exposing (WorldDimensions)
 import Grid exposing (Cell, Color, Grid, Position)
@@ -30,14 +30,8 @@ type alias Model =
     , gameOver : Bool
     , mousePosition : { x : Float, y : Float }
     , windowSize : { width : Int, height : Int }
-    , highscores : List Score
-    }
-
-
-type alias Score =
-    { name : String
-    , score : Int
     , highscores : ScoresData
+    , score : Int
     }
 
 
@@ -63,7 +57,6 @@ initialModel =
       , windowSize = { width = 1600, height = 1000 }
       , highscores = Loading
       , score = 0
-      , highscores = Loading
       }
     , Cmd.batch [ Random.generate Start tetroidGenerator, getScoresCmd ]
     )

@@ -3,7 +3,7 @@ module UI exposing (myh2, renderControls, renderGameOverText, renderHighscore, r
 import Html exposing (Html, br, button, div, h1, h2, li, p, span, text, ul)
 import Html.Attributes exposing (class, disabled, height, id, style, width)
 import Messages exposing (Msg)
-import Model exposing (Score)
+import Score exposing (Score, Scores)
 import Table exposing (Cell, Row, table)
 
 
@@ -19,12 +19,10 @@ renderGameOverText isGameOver =
     in
     div
         [ style "position" "absolute"
-        , style "left" "50%"
         , checkForVisibility
         ]
         [ div
             [ style "position" "relative"
-            , style "left" "-50%"
             , style "background" "#505050"
             ]
             [ h1
@@ -64,7 +62,7 @@ renderList lst =
             ]
 
 
-renderscore : Score -> Html Msg
+renderscore : Int -> Html Msg
 renderscore score =
     div []
         [ h2 myh2 [ text "Score" ]
@@ -72,7 +70,7 @@ renderscore score =
             [ style "font-size" "45px"
             , style "font-weight" "500"
             ]
-            [ text (String.fromInt score.score) ]
+            [ text (String.fromInt score) ]
         ]
 
 
@@ -94,7 +92,7 @@ highscoreRow =
 
 idCell : Score -> Html Msg
 idCell highscore =
-    Html.div [] [ text (String.fromInt highscore.id) ]
+    Html.div [] [ text (String.fromInt 0) ]
 
 
 nameCell : Score -> Html Msg

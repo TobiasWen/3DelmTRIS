@@ -58,8 +58,8 @@ renderGameScene model =
     in
     WebGL.toHtmlWith
         options
-        [ width (gameSceneDimensions.width - 20)
-        , height (gameSceneDimensions.height - 50)
+        [ width (gameSceneDimensions.width - 40)
+        , height (gameSceneDimensions.height - 100)
         , style "object-fit" "cover"
         ]
         fullgrid
@@ -131,7 +131,7 @@ renderNextTetroidScene model =
             options
             [ width (round rightColumwidth)
             , height (round rightColumwidth)
-            , style "margin" "auto"
+            , style "margin-top" "-5em"
             ]
             (cellsToWebGLEnteties True
                 model
