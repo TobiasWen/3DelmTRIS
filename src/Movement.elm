@@ -21,11 +21,6 @@ translateTetroid { grid, center } vec =
     Tetroid (List.map (\cell -> translateCell cell vec) grid) (translate center vec)
 
 
-
--- TODO: Find a better name for this function which describes it accurately or
--- change it when it can't be described.
-
-
 moveTetroidByOffsetFromPosition : Position -> Tetroid -> Tetroid
 moveTetroidByOffsetFromPosition pos { grid, center } =
     let

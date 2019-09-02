@@ -43,7 +43,7 @@ update msg model =
             )
 
         ScoreResponse response ->
-            handleScoreResponse response ( model, Cmd.none )
+            ( handleScoreResponse response model, Cmd.none )
 
         NewName name ->
             ( { model | playerName = name }, Cmd.none )
@@ -123,14 +123,14 @@ checkForClear ( model, cmd ) =
         ( model, cmd )
 
 
-handleScoreResponse : Result Http.Error Scores -> ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
-handleScoreResponse response ( model, cmd ) =
+handleScoreResponse : Result Http.Error Scores -> Model -> Model
+handleScoreResponse response model =
     case response of
         Err error ->
-            ( { model | highscores = Error error }, cmd )
+            { model | highscores = Error error }
 
         Ok scores ->
-            ( { model | highscores = Loaded scores }, cmd )
+            { model | highscores = Loaded scores }
 
 
 handleKeyInput : Model -> Key -> ( Model, Cmd Msg )

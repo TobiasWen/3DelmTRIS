@@ -1,4 +1,4 @@
-module UI exposing (myh2, renderControls, renderGameOverScreen, renderHighscore, renderscore)
+module View.UI exposing (myh2, renderControls, renderGameOverScreen, renderHighscore, renderscore)
 
 import Html exposing (Html, button, div, h1, h2, input, li, span, text, ul)
 import Html.Attributes exposing (placeholder, style)
@@ -6,7 +6,7 @@ import Html.Events exposing (onClick, onInput)
 import Messages exposing (Msg(..))
 import Model exposing (Model)
 import Score exposing (Score)
-import Table exposing (Row, table)
+import View.Table exposing (Row, table)
 
 
 renderGameOverScreen : Model -> Html Msg

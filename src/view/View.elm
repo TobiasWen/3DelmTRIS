@@ -1,4 +1,4 @@
-module View exposing (view)
+module View.View exposing (view)
 
 import Css exposing (margin, padding, px)
 import Css.Global exposing (body, global)
@@ -7,9 +7,9 @@ import Html.Attributes exposing (style)
 import Html.Styled as Styled
 import Messages exposing (Msg)
 import Model exposing (Model)
-import Scene exposing (renderGameScene, renderNextTetroidScene)
 import Score exposing (ScoresData(..))
-import UI exposing (renderControls, renderGameOverScreen)
+import View.Scene as Scene exposing (renderGameScene, renderNextTetroidScene)
+import View.UI as UI exposing (renderControls, renderGameOverScreen)
 
 
 view : Model -> Html Msg

@@ -1,4 +1,4 @@
-module Table exposing (Cell, Row, table)
+module View.Table exposing (Cell, Row, table)
 
 import Html exposing (Html)
 import Html.Attributes exposing (class, style)

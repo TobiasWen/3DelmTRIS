@@ -8,7 +8,7 @@ import Messages exposing (Msg(..))
 import Model exposing (Model, getTickRate, initialModel)
 import Time exposing (every)
 import Update exposing (update)
-import View exposing (view)
+import View.View as View exposing (view)
 
 
 
