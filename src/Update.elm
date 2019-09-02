@@ -73,16 +73,7 @@ handleTick ( model, cmd ) =
         ( model, cmd )
 
     else
-        checkForNewTetroid ( model, cmd ) |> checkForCollision |> checkForClear
-
-
-checkForNewTetroid : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
-checkForNewTetroid ( model, cmd ) =
-    if model.activeTetroid == Nothing then
-        ( { model | activeTetroid = model.upcomingTetroid }, Cmd.batch [ Random.generate UpcomingTetroid tetroidGenerator, cmd ] )
-
-    else
-        ( model, cmd )
+        checkForCollision ( model, cmd ) |> checkForClear
 
 
 checkForCollision : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
@@ -99,7 +90,7 @@ checkForCollision ( model, cmd ) =
                 ( { model | activeTetroid = Just (fallDown tetroid) }, cmd )
 
         Nothing ->
-            ( model, cmd )
+            ( { model | activeTetroid = model.upcomingTetroid }, Cmd.batch [ Random.generate UpcomingTetroid tetroidGenerator, cmd ] )
 
 
 checkForClear : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
@@ -156,6 +147,9 @@ handleKeyInput model key =
 
                     SpaceKeyUp ->
                         ( { model | fastFallDown = False }, Cmd.none )
+
+                    EnterKeyDown ->
+                        initialModel
 
                     ArrowDownKeyDown ->
                         if checkGridMovementCollision tetroid.grid model.grid Down then

@@ -9,6 +9,7 @@ type Key
     | ArrowLeftKeyDown
     | ArrowRightKeyDown
     | SpaceKeyDown
+    | EnterKeyDown
     | QKeyDown
     | EKeyDown
     | RKeyDown
@@ -65,6 +66,9 @@ toKeyDown string =
 
         " " ->
             SpaceKeyDown
+
+        "Enter" ->
+            EnterKeyDown
 
         _ ->
             Other

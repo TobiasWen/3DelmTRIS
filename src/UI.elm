@@ -75,7 +75,7 @@ renderControls =
 
 controls : List String
 controls =
-    [ "SPACE - Down faster", "\u{2000}", "W - Forward", "A - Left", "S - Backwards", "D - Right", "\u{2000}", "Q - Rotate X", "E - Rotate Y", "R - Rotate Z", "F5 - Restart" ]
+    [ "SPACE - Down faster", "\u{2000}", "W - Forward", "A - Left", "S - Backwards", "D - Right", "\u{2000}", "Q - Rotate X", "E - Rotate Y", "R - Rotate Z", "Enter - Restart" ]
 
 
 renderList : List String -> Html Msg

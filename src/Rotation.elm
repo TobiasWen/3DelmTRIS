@@ -3,9 +3,12 @@ module Rotation exposing (Axis(..), canRotate, rotateTetroid)
 import Dimensions exposing (WorldDimensions)
 import Grid exposing (Grid, Position, addPositions, checkGridOverlap, subtractPositions)
 import List
-import Matrix3 exposing (Mat3, multiplyVecMatrix)
 import Movement exposing (calculateWallKickVector, translateTetroid)
 import Tetroids exposing (Tetroid)
+
+
+type alias Mat3 =
+    ( Position, Position, Position )
 
 
 type Axis
@@ -58,3 +61,11 @@ canRotate tetroid grid axis dim =
             rotateTetroid tetroid axis
     in
     not <| checkGridOverlap grid <| (translateTetroid rotatedTetroid <| calculateWallKickVector rotatedTetroid dim).grid
+
+
+multiplyVecMatrix : Mat3 -> Position -> Position
+multiplyVecMatrix ( row0, row1, row2 ) vec =
+    { x = (row0.x * vec.x) + (row0.y * vec.y) + (row0.z * vec.z)
+    , y = (row1.x * vec.x) + (row1.y * vec.y) + (row1.z * vec.z)
+    , z = (row2.x * vec.x) + (row2.y * vec.y) + (row2.z * vec.z)
+    }
