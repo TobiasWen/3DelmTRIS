@@ -13,7 +13,10 @@ type Direction
 
 
 type alias Color =
-    { r : Int, g : Int, b : Int }
+    { r : Int
+    , g : Int
+    , b : Int
+    }
 
 
 
@@ -21,7 +24,10 @@ type alias Color =
 
 
 type alias Position =
-    { x : Float, y : Float, z : Float }
+    { x : Float
+    , y : Float
+    , z : Float
+    }
 
 
 setPosition : Float -> Float -> Float -> Position -> Position

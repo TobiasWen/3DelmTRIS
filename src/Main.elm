@@ -1,15 +1,12 @@
 module Tetris exposing (main)
 
 import Browser
-import Browser.Dom exposing (Element, getElement)
 import Browser.Events
 import Input exposing (keyDownDecoder, keyUpDecoder, mousePosition)
 import Json.Decode
-import Json.Encode
 import Messages exposing (Msg(..))
 import Model exposing (Model, getTickRate, initialModel)
-import Task
-import Time exposing (..)
+import Time exposing (every)
 import Update exposing (update)
 import View exposing (view)
 

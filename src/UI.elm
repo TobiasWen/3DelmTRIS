@@ -1,13 +1,12 @@
 module UI exposing (myh2, renderControls, renderGameOverScreen, renderHighscore, renderscore)
 
-import Css
-import Html exposing (Html, br, button, div, h1, h2, input, li, p, span, text, ul)
-import Html.Attributes exposing (class, disabled, height, id, placeholder, style, width)
+import Html exposing (Html, button, div, h1, h2, input, li, span, text, ul)
+import Html.Attributes exposing (placeholder, style)
 import Html.Events exposing (onClick, onInput)
 import Messages exposing (Msg(..))
-import Model exposing (Model, initialModel)
-import Score exposing (Score, Scores)
-import Table exposing (Cell, Row, table)
+import Model exposing (Model)
+import Score exposing (Score)
+import Table exposing (Row, table)
 
 
 renderGameOverScreen : Model -> Html Msg
@@ -74,6 +73,7 @@ renderControls =
         ]
 
 
+controls : List String
 controls =
     [ "SPACE - Down faster", "\u{2000}", "W - Forward", "A - Left", "S - Backwards", "D - Right", "\u{2000}", "Q - Rotate X", "E - Rotate Y", "R - Rotate Z", "F5 - Restart" ]
 

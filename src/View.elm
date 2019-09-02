@@ -2,9 +2,8 @@ module View exposing (view)
 
 import Css exposing (margin, padding, px)
 import Css.Global exposing (body, global)
-import Html exposing (Html, br, button, div, h1, h2, p, span, text)
-import Html.Attributes exposing (class, disabled, height, id, style, width)
-import Html.Events exposing (onClick)
+import Html exposing (Html, div, h1, span, text)
+import Html.Attributes exposing (style)
 import Html.Styled as Styled
 import Messages exposing (Msg)
 import Model exposing (Model)

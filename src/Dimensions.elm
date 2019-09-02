@@ -15,5 +15,5 @@ type alias WorldDimensions =
 
 
 calculateTopCenter : WorldDimensions -> Position
-calculateTopCenter { width, height, depth } =
+calculateTopCenter { width, depth } =
     Position (toFloat <| floor <| (width / 2)) 0 (toFloat <| floor <| (depth / 2))

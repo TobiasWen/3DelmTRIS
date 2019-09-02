@@ -1,10 +1,7 @@
 module Messages exposing (Msg(..))
 
-import Browser.Dom exposing (Element)
-import Grid exposing (Direction)
 import Http
 import Input exposing (Key, Mouse)
-import Rotation exposing (Axis)
 import Score exposing (Score, Scores)
 import Tetroids exposing (Tetroid)
 

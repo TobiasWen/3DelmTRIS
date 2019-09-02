@@ -1,13 +1,12 @@
 module Model exposing (GameState(..), Model, getTickRate, initialModel)
 
 import Dimensions exposing (WorldDimensions)
-import Grid exposing (Cell, Color, Grid, Position)
-import Json.Decode
+import Grid exposing (Grid)
 import Messages exposing (Msg(..))
-import Random exposing (..)
+import Random exposing (generate)
 import Requests exposing (getScoresCmd)
-import Score exposing (Scores, ScoresData(..))
-import Tetroids exposing (..)
+import Score exposing (ScoresData(..))
+import Tetroids exposing (Tetroid, tetroidGenerator)
 
 
 
@@ -28,8 +27,14 @@ type alias Model =
     , fastFallDown : Bool
     , tickRateMs : Float
     , gameOver : Bool
-    , mousePosition : { x : Float, y : Float }
-    , windowSize : { width : Int, height : Int }
+    , mousePosition :
+        { x : Float
+        , y : Float
+        }
+    , windowSize :
+        { width : Int
+        , height : Int
+        }
     , highscores : ScoresData
     , score : Int
     , playerName : String

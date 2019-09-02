@@ -1,9 +1,8 @@
 module Scene exposing (renderGameScene, renderNextTetroidScene)
 
 import Grid exposing (Color, Grid, Position, checkGridFallDownCollision, mergeGrids, reColorGrid)
-import Html exposing (Html, br, button, div, h1, h2, p, span, text)
-import Html.Attributes exposing (class, disabled, height, id, style, width)
-import Html.Events exposing (onClick)
+import Html exposing (Html, div, h2, text)
+import Html.Attributes exposing (height, style, width)
 import List exposing (concat)
 import Math.Matrix4 as Mat4 exposing (Mat4)
 import Math.Vector3 as Vec3 exposing (Vec3, toRecord, vec3)
@@ -13,9 +12,8 @@ import Movement exposing (fallDown, isCollidingWithFloor)
 import Tetroids exposing (Tetroid)
 import UI exposing (myh2)
 import WebGL exposing (Mesh, Shader, alpha)
-import WebGL.Settings exposing (Setting)
-import WebGL.Settings.Blend exposing (..)
-import WebGL.Settings.DepthTest exposing (..)
+import WebGL.Settings.Blend exposing (add, dstColor, one, oneMinusDstAlpha)
+import WebGL.Settings.DepthTest exposing (default)
 
 
 renderGameScene : Model -> Html Msg
@@ -105,7 +103,7 @@ bottomOutTetroid model tetroid =
     else
         bottomOutTetroid model
             (case model.activeTetroid of
-                Just tetroidY ->
+                Just _ ->
                     fallDown tetroid
 
                 Nothing ->
@@ -185,9 +183,6 @@ manipulatePerspective : Bool -> Float -> Float -> Float -> Model -> Mat4
 manipulatePerspective isStaticCamera zoom width height model =
     if isStaticCamera then
         let
-            sensitivity =
-                0.6
-
             eye =
                 vec3 (0.1 * cos (degrees 95)) 0 (0.1 * sin (degrees 95))
                     |> Vec3.normalize
@@ -482,20 +477,6 @@ playareaHulle model =
     ]
         |> List.concat
         |> WebGL.triangles
-
-
-face : Vec3 -> Vec3 -> Vec3 -> Vec3 -> Vec3 -> List ( Vertex, Vertex, Vertex )
-face color a b c d =
-    let
-        vertex position =
-            Vertex (Vec3.scale (1 / 255) color) position
-
-        vertex2 position =
-            Vertex (Vec3.scale 0.7 (Vec3.scale (1 / 255) color)) position
-    in
-    [ ( vertex2 a, vertex b, vertex2 c )
-    , ( vertex2 c, vertex d, vertex2 a )
-    ]
 
 
 flatFace : Vec3 -> Vec3 -> Vec3 -> Vec3 -> Vec3 -> List ( Vertex, Vertex, Vertex )

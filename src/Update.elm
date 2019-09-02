@@ -1,16 +1,15 @@
 module Update exposing (update)
 
-import Dimensions exposing (WorldDimensions, calculateTopCenter)
 import Grid exposing (Direction(..), Grid, checkGridFallDownCollision, checkGridMovementCollision, checkGridOverlap, clearPlanes, mergeGrids)
 import Http
-import Input exposing (Key(..), Mouse)
+import Input exposing (Key(..))
 import Messages exposing (Msg(..))
 import Model exposing (GameState(..), Model, initialModel)
 import Movement exposing (calculateWallKickVector, fallDown, isCollidingWithFloor, moveTetroid, spawnTetroid, translateTetroid)
-import Random exposing (..)
+import Random exposing (generate)
 import Requests exposing (postScoreCmd)
 import Rotation exposing (Axis(..), canRotate, rotateTetroid)
-import Score exposing (Scores, ScoresData(..), clearPointsFourPlanes, clearPointsOnePlane, clearPointsThreePlanes, clearPointsTwoPlanes, pointsBlockPlaced, scoreListDecoder)
+import Score exposing (Scores, ScoresData(..), clearPointsFourPlanes, clearPointsOnePlane, clearPointsThreePlanes, clearPointsTwoPlanes, pointsBlockPlaced)
 import Sounds exposing (sounds)
 import Tetroids exposing (Tetroid, tetroidGenerator)
 

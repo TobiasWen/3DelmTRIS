@@ -1,7 +1,7 @@
 module Tetroids exposing (Tetroid, blue, createBlueTetroid, createGreenTetroid, createOrangeTetroid, createPinkTetroid, createTetroid, createYellowTetroid, green, orange, pink, tetroidGenerator, tetroids, yellow)
 
 import Grid exposing (Color, Grid, Position)
-import Random exposing (..)
+import Random exposing (Generator, uniform)
 
 
 

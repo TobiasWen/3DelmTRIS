@@ -18,6 +18,10 @@ type alias Score =
     }
 
 
+
+-- Record with one field to match json object structure
+
+
 type alias Scores =
     { scores : List Score }
 

@@ -1,6 +1,6 @@
 module Table exposing (Cell, Row, table)
 
-import Html exposing (Html, div)
+import Html exposing (Html)
 import Html.Attributes exposing (class, style)
 
 
@@ -24,4 +24,4 @@ tableRow row record =
 
 tableCell : record -> Cell record msg -> Html msg
 tableCell record cell =
-    Html.td [ class "table-cell", style "border" "1px solid #ddd", style "paddin" "8px" ] [ cell record ]
+    Html.td [ class "table-cell", style "border-bottom" "1px solid #ddd", style "paddin" "8px" ] [ cell record ]
