@@ -1,4 +1,4 @@
-module Grid exposing (Cell, Color, Direction(..), Grid, Position, addPositions, checkGridFallDownCollision, checkGridMovementCollision, checkGridOverlap, clearPlanes, filterOutPlanes, getPlanesToRemove, isPlaneFull, isPositionNextToGrid, mergeGrids, reColorGrid, setPosition, subtractPositions)
+module Grid exposing (Cell, Color, Direction(..), Grid, Position, checkGridFallDownCollision, checkGridMovementCollision, checkGridOverlap, clearPlanes, filterOutPlanes, getPlanesToRemove, isPlaneFull, isPositionNextToGrid, mergeGrids, positionArithmetics, reColorGrid)
 
 
 type Direction
@@ -30,11 +30,6 @@ type alias Position =
     }
 
 
-setPosition : Float -> Float -> Float -> Position -> Position
-setPosition x y z vec =
-    { vec | x = x, y = y, z = z }
-
-
 
 -- One cell represents a building block of a tetroid
 
@@ -46,7 +41,7 @@ type alias Cell =
 
 
 
--- A grid i1 the composition of many cells
+-- A grid is the composition of many cells
 
 
 type alias Grid =
@@ -79,14 +74,19 @@ isPositionNextToGrid grid pos dir =
             List.any (\cell -> cell.position.y == pos.y && cell.position.x == pos.x + 1 && cell.position.z == pos.z) grid
 
 
+checkPositionConditionOnGrids : (Grid -> Position -> Bool) -> Grid -> Grid -> Bool
+checkPositionConditionOnGrids fn g1 g2 =
+    List.any (\cell -> fn g2 cell.position) g1
+
+
 checkGridOverlap : Grid -> Grid -> Bool
 checkGridOverlap g1 g2 =
-    List.any (\cell -> isPositionInGrid g2 cell.position) g1
+    checkPositionConditionOnGrids isPositionInGrid g1 g2
 
 
 checkGridFallDownCollision : Grid -> Grid -> Bool
 checkGridFallDownCollision g1 g2 =
-    List.any (\cell -> isPositionBelowGrid g2 cell.position) g1
+    checkPositionConditionOnGrids isPositionBelowGrid g1 g2
 
 
 checkGridMovementCollision : Grid -> Grid -> Direction -> Bool
@@ -94,18 +94,9 @@ checkGridMovementCollision g1 g2 dir =
     List.any (\cell -> isPositionNextToGrid g2 cell.position dir) g1
 
 
-
--- TODO: Optimize with function receiving operator (+) (-) etc.
-
-
-subtractPositions : Position -> Position -> Position
-subtractPositions p1 p2 =
-    { p1 | x = p1.x - p2.x, y = p1.y - p2.y, z = p1.z - p2.z }
-
-
-addPositions : Position -> Position -> Position
-addPositions p1 p2 =
-    { p1 | x = p1.x + p2.x, y = p1.y + p2.y, z = p1.z + p2.z }
+positionArithmetics : (Float -> Float -> Float) -> Position -> Position -> Position
+positionArithmetics fn p1 p2 =
+    { x = fn p1.x p2.x, y = fn p1.y p2.y, z = fn p1.z p2.z }
 
 
 
@@ -119,7 +110,7 @@ mergeGrids g1 g2 =
 
 isPlaneFull : Grid -> Int -> Float -> Bool
 isPlaneFull grid cellCount level =
-    (List.length <| List.filter (\cell -> cell.position.y == level) grid) == cellCount
+    (List.foldl (\_ n -> n + 1) 0 <| List.filter (\cell -> cell.position.y == level) grid) == cellCount
 
 
 getPlanesToRemove : Grid -> Float -> Float -> Int -> List Float
@@ -177,15 +168,4 @@ clearPlanes grid cellCount height =
 
 reColorGrid : Color -> Grid -> Grid
 reColorGrid color grid =
-    case grid of
-        [] ->
-            []
-
-        [ x ] ->
-            [ Cell color x.position ]
-
-        x :: xs ->
-            List.concat
-                [ [ Cell color x.position ]
-                , reColorGrid color xs
-                ]
+    List.map (\cell -> { cell | color = color, position = cell.position }) grid

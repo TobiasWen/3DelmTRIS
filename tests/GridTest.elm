@@ -12,12 +12,12 @@ import Tetroids exposing (..)
 suite : Test
 suite =
     describe "Tests regarding Grid module"
-        [ describe "Grid.subtractPositions"
+        [ describe "Grid.positionArithmetics"
             [ test "Subtract two positions" <|
                 \_ ->
                     -- { x = 1, y = 1, z = 1 }
                     position
-                        |> subtractPositions { x = 0, y = 0, z = 0 }
+                        |> positionArithmetics (-) { x = 0, y = 0, z = 0 }
                         |> Expect.equal { x = -1, y = -1, z = -1 }
             ]
         , describe "Grid.isPlaneFull"

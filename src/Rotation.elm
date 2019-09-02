@@ -1,7 +1,7 @@
 module Rotation exposing (Axis(..), canRotate, rotateTetroid)
 
 import Dimensions exposing (WorldDimensions)
-import Grid exposing (Grid, Position, addPositions, checkGridOverlap, subtractPositions)
+import Grid exposing (Grid, Position, checkGridOverlap, positionArithmetics)
 import List
 import Movement exposing (calculateWallKickVector, translateTetroid)
 import Tetroids exposing (Tetroid)
@@ -45,13 +45,13 @@ rotateTetroid : Tetroid -> Axis -> Tetroid
 rotateTetroid tetroid axis =
     case axis of
         X ->
-            { tetroid | grid = List.map (\cell -> { cell | position = addPositions tetroid.center <| multiplyVecMatrix xAxisRotationMatrix <| subtractPositions cell.position tetroid.center }) tetroid.grid }
+            { tetroid | grid = List.map (\cell -> { cell | position = positionArithmetics (+) tetroid.center <| multiplyVecMatrix xAxisRotationMatrix <| positionArithmetics (-) cell.position tetroid.center }) tetroid.grid }
 
         Y ->
-            { tetroid | grid = List.map (\cell -> { cell | position = addPositions tetroid.center <| multiplyVecMatrix yAxisRotationMatrix <| subtractPositions cell.position tetroid.center }) tetroid.grid }
+            { tetroid | grid = List.map (\cell -> { cell | position = positionArithmetics (+) tetroid.center <| multiplyVecMatrix yAxisRotationMatrix <| positionArithmetics (-) cell.position tetroid.center }) tetroid.grid }
 
         Z ->
-            { tetroid | grid = List.map (\cell -> { cell | position = addPositions tetroid.center <| multiplyVecMatrix zAxisRotationMatrix <| subtractPositions cell.position tetroid.center }) tetroid.grid }
+            { tetroid | grid = List.map (\cell -> { cell | position = positionArithmetics (+) tetroid.center <| multiplyVecMatrix zAxisRotationMatrix <| positionArithmetics (-) cell.position tetroid.center }) tetroid.grid }
 
 
 canRotate : Tetroid -> Grid -> Axis -> WorldDimensions -> Bool

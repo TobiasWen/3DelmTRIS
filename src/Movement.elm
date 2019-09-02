@@ -1,14 +1,14 @@
 module Movement exposing (calculateWallKickVector, fallDown, isCollidingWithFloor, moveTetroid, moveTetroidByOffsetFromPosition, spawnTetroid, translate, translateCell, translateTetroid)
 
 import Dimensions exposing (WorldDimensions, calculateTopCenter)
-import Grid exposing (Cell, Direction(..), Grid, Position)
+import Grid exposing (Cell, Direction(..), Grid, Position, positionArithmetics)
 import List
 import Tetroids exposing (Tetroid)
 
 
 translate : Position -> Position -> Position
 translate origin vec =
-    { origin | x = origin.x + vec.x, y = origin.y + vec.y, z = origin.z + vec.z }
+    positionArithmetics (+) origin vec
 
 
 translateCell : Cell -> Position -> Cell
