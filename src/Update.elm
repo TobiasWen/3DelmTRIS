@@ -11,6 +11,7 @@ import Random exposing (..)
 import Requests exposing (postScoreCmd)
 import Rotation exposing (Axis(..), canRotate, rotateTetroid)
 import Score exposing (Scores, ScoresData(..), clearPointsFourPlanes, clearPointsOnePlane, clearPointsThreePlanes, clearPointsTwoPlanes, pointsBlockPlaced, scoreListDecoder)
+import Sounds exposing (sounds)
 import Tetroids exposing (Tetroid, tetroidGenerator)
 
 
@@ -18,7 +19,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Start tetroid ->
-            ( startGame model tetroid, Cmd.none )
+            ( startGame model tetroid, sounds "music" )
 
         Tick ->
             handleTick ( model, Cmd.none )
@@ -27,7 +28,7 @@ update msg model =
             ( setUpcomingTetroid model tetroid, Cmd.none )
 
         KeyEvent key ->
-            ( handleKeyInput model key, Cmd.none )
+            handleKeyInput model key
 
         MouseEvent mouse ->
             ( { model | mousePosition = mouse }, Cmd.none )
@@ -90,10 +91,10 @@ checkForCollision ( model, cmd ) =
     case model.activeTetroid of
         Just tetroid ->
             if checkGridOverlap tetroid.grid model.grid then
-                ( { model | gameState = Stopped, gameOver = True }, cmd )
+                ( { model | gameState = Stopped, gameOver = True }, Cmd.batch [ cmd, sounds "gameOver" ] )
 
             else if checkGridFallDownCollision tetroid.grid model.grid || isCollidingWithFloor tetroid model.dimensions then
-                ( { model | grid = mergeGrids model.grid tetroid.grid, activeTetroid = Nothing, fastFallDown = False, score = model.score + pointsBlockPlaced }, cmd )
+                ( { model | grid = mergeGrids model.grid tetroid.grid, activeTetroid = Nothing, fastFallDown = False, score = model.score + pointsBlockPlaced }, Cmd.batch [ cmd, sounds "tetroidPlaced" ] )
 
             else
                 ( { model | activeTetroid = Just (fallDown tetroid) }, cmd )
@@ -114,16 +115,16 @@ checkForClear ( model, cmd ) =
             ( grid, clearedPlaneCount ) ->
                 case clearedPlaneCount of
                     1 ->
-                        ( { model | grid = grid, score = model.score + clearPointsOnePlane }, cmd )
+                        ( { model | grid = grid, score = model.score + clearPointsOnePlane }, Cmd.batch [ cmd, sounds "planeCleared" ] )
 
                     2 ->
-                        ( { model | grid = grid, score = model.score + clearPointsTwoPlanes }, cmd )
+                        ( { model | grid = grid, score = model.score + clearPointsTwoPlanes }, Cmd.batch [ cmd, sounds "planeCleared" ] )
 
                     3 ->
-                        ( { model | grid = grid, score = model.score + clearPointsThreePlanes }, cmd )
+                        ( { model | grid = grid, score = model.score + clearPointsThreePlanes }, Cmd.batch [ cmd, sounds "planeCleared" ] )
 
                     4 ->
-                        ( { model | grid = grid, score = model.score + clearPointsFourPlanes }, cmd )
+                        ( { model | grid = grid, score = model.score + clearPointsFourPlanes }, Cmd.batch [ cmd, sounds "planeCleared" ] )
 
                     _ ->
                         ( model, cmd )
@@ -142,68 +143,68 @@ handleScoreResponse response ( model, cmd ) =
             ( { model | highscores = Loaded scores }, cmd )
 
 
-handleKeyInput : Model -> Key -> Model
+handleKeyInput : Model -> Key -> ( Model, Cmd Msg )
 handleKeyInput model key =
     case model.activeTetroid of
         Just tetroid ->
             case key of
                 SpaceKeyDown ->
-                    { model | fastFallDown = True }
+                    ( { model | fastFallDown = True }, Cmd.none )
 
                 SpaceKeyUp ->
-                    { model | fastFallDown = False }
+                    ( { model | fastFallDown = False }, Cmd.none )
 
                 ArrowDownKeyDown ->
                     if checkGridMovementCollision tetroid.grid model.grid Down then
-                        model
+                        ( model, Cmd.none )
 
                     else
-                        { model | activeTetroid = Just (moveTetroid tetroid Down model.dimensions) }
+                        ( { model | activeTetroid = Just (moveTetroid tetroid Down model.dimensions) }, Cmd.none )
 
                 ArrowUpKeyDown ->
                     if checkGridMovementCollision tetroid.grid model.grid Up then
-                        model
+                        ( model, Cmd.none )
 
                     else
-                        { model | activeTetroid = Just (moveTetroid tetroid Up model.dimensions) }
+                        ( { model | activeTetroid = Just (moveTetroid tetroid Up model.dimensions) }, Cmd.none )
 
                 ArrowLeftKeyDown ->
                     if checkGridMovementCollision tetroid.grid model.grid Left then
-                        model
+                        ( model, Cmd.none )
 
                     else
-                        { model | activeTetroid = Just (moveTetroid tetroid Left model.dimensions) }
+                        ( { model | activeTetroid = Just (moveTetroid tetroid Left model.dimensions) }, Cmd.none )
 
                 ArrowRightKeyDown ->
                     if checkGridMovementCollision tetroid.grid model.grid Right then
-                        model
+                        ( model, Cmd.none )
 
                     else
-                        { model | activeTetroid = Just (moveTetroid tetroid Right model.dimensions) }
+                        ( { model | activeTetroid = Just (moveTetroid tetroid Right model.dimensions) }, Cmd.none )
 
                 QKeyDown ->
                     if canRotate tetroid model.grid X model.dimensions then
-                        { model | activeTetroid = Just (translateTetroid (rotateTetroid tetroid X) (calculateWallKickVector (rotateTetroid tetroid X) model.dimensions)) }
+                        ( { model | activeTetroid = Just (translateTetroid (rotateTetroid tetroid X) (calculateWallKickVector (rotateTetroid tetroid X) model.dimensions)) }, sounds "tetroidRotated" )
 
                     else
-                        model
+                        ( model, Cmd.none )
 
                 EKeyDown ->
                     if canRotate tetroid model.grid Y model.dimensions then
-                        { model | activeTetroid = Just (translateTetroid (rotateTetroid tetroid Y) (calculateWallKickVector (rotateTetroid tetroid Y) model.dimensions)) }
+                        ( { model | activeTetroid = Just (translateTetroid (rotateTetroid tetroid Y) (calculateWallKickVector (rotateTetroid tetroid Y) model.dimensions)) }, sounds "tetroidRotated" )
 
                     else
-                        model
+                        ( model, Cmd.none )
 
                 RKeyDown ->
                     if canRotate tetroid model.grid Z model.dimensions then
-                        { model | activeTetroid = Just (translateTetroid (rotateTetroid tetroid Z) (calculateWallKickVector (rotateTetroid tetroid Z) model.dimensions)) }
+                        ( { model | activeTetroid = Just (translateTetroid (rotateTetroid tetroid Z) (calculateWallKickVector (rotateTetroid tetroid Z) model.dimensions)) }, sounds "tetroidRotated" )
 
                     else
-                        model
+                        ( model, Cmd.none )
 
                 _ ->
-                    model
+                    ( model, Cmd.none )
 
         Nothing ->
-            model
+            ( model, Cmd.none )

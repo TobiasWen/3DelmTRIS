@@ -5,6 +5,7 @@ import Browser.Dom exposing (Element, getElement)
 import Browser.Events
 import Input exposing (keyDownDecoder, keyUpDecoder, mousePosition)
 import Json.Decode
+import Json.Encode
 import Messages exposing (Msg(..))
 import Model exposing (Model, getTickRate, initialModel)
 import Task
