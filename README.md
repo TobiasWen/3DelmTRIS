@@ -16,5 +16,5 @@ The tests in this project were only created for testing functionality in the ear
 3. Run `elm-test`.
 
 ## Assets
-Background music by [FreeMusicDownload-NoCopyrightSongs](https://audiograb.com/egPVoqkI).  
-Sound effects taken from [https://freesound.org/](https://freesound.org/).
+- Background music by [FreeMusicDownload-NoCopyrightSongs](https://audiograb.com/egPVoqkI).  
+- Sound effects taken from [https://freesound.org/](https://freesound.org/).
