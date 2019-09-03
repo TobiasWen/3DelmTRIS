@@ -14,3 +14,7 @@ The tests in this project were only created for testing functionality in the ear
 1. Run `npm install -g elm-test` if you haven't already.
 2. `cd` into the project's root directory.
 3. Run `elm-test`.
+
+## Assets
+Background music by [FreeMusicDownload-NoCopyrightSongs](https://audiograb.com/egPVoqkI).  
+Sound effects taken from [https://freesound.org/](https://freesound.org/).
