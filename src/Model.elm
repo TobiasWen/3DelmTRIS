@@ -2,15 +2,12 @@ module Model exposing (GameState(..), Model, getTickRate, initialModel)
 
 import Dimensions exposing (WorldDimensions)
 import Grid exposing (Grid)
+import Input exposing (Mouse)
 import Messages exposing (Msg(..))
 import Random exposing (generate)
 import Requests exposing (getScoresCmd)
 import Score exposing (ScoresData(..))
 import Tetroids exposing (Tetroid, tetroidGenerator)
-
-
-
--- Work in Progress Model
 
 
 type GameState
@@ -27,10 +24,7 @@ type alias Model =
     , fastFallDown : Bool
     , tickRateMs : Float
     , gameOver : Bool
-    , mousePosition :
-        { x : Float
-        , y : Float
-        }
+    , mousePosition : Mouse
     , windowSize :
         { width : Int
         , height : Int
@@ -41,12 +35,20 @@ type alias Model =
     }
 
 
+
+-- Standard dimensions of the playing field.
+
+
 initialWorldDimensions : WorldDimensions
 initialWorldDimensions =
     { width = 7
     , height = 14
     , depth = 7
     }
+
+
+
+-- Initial model on startup
 
 
 initialModel : ( Model, Cmd Msg )

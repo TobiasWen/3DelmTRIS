@@ -7,7 +7,8 @@ import Tetroids exposing (Tetroid)
 
 
 type Msg
-    = Start Tetroid
+    = NoOp
+    | Start Tetroid
     | Stop
     | Tick
     | UpcomingTetroid Tetroid

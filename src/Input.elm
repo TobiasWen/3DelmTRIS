@@ -3,6 +3,10 @@ module Input exposing (Key(..), Mouse, keyDownDecoder, keyUpDecoder, mousePositi
 import Json.Decode
 
 
+
+-- Keys for user-game interaction
+
+
 type Key
     = ArrowUpKeyDown
     | ArrowDownKeyDown
@@ -23,9 +27,17 @@ type alias Mouse =
     }
 
 
+
+-- Decoder for decoding keyDown events to Keys.
+
+
 keyDownDecoder : Json.Decode.Decoder Key
 keyDownDecoder =
     Json.Decode.map toKeyDown (Json.Decode.field "key" Json.Decode.string)
+
+
+
+-- Decoder for decoding keyUp events to Keys.
 
 
 keyUpDecoder : Json.Decode.Decoder Key
@@ -33,11 +45,19 @@ keyUpDecoder =
     Json.Decode.map toKeyUp (Json.Decode.field "key" Json.Decode.string)
 
 
+
+-- Decoder for decoding mouse movement events to screen coordinates.
+
+
 mousePosition : Json.Decode.Decoder Mouse
 mousePosition =
     Json.Decode.map2 (\x y -> { x = x, y = y })
         (Json.Decode.field "pageX" Json.Decode.float)
         (Json.Decode.field "pageY" Json.Decode.float)
+
+
+
+-- Converts key string from KeyboardEvent to Key
 
 
 toKeyDown : String -> Key
