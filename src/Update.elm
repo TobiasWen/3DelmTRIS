@@ -12,6 +12,7 @@ import Rotation exposing (Axis(..), canRotate, rotateTetroid)
 import Score exposing (Scores, ScoresData(..), clearPointsFourPlanes, clearPointsOnePlane, clearPointsThreePlanes, clearPointsTwoPlanes, pointsBlockPlaced)
 import Sounds exposing (sounds)
 import Tetroids exposing (Tetroid, tetroidGenerator)
+import Util exposing (flip)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -57,9 +58,19 @@ update msg model =
             ( model, Cmd.none )
 
 
+
+{- Starts the game by spawning a tetroid in the center of the playing field and sets the
+   gamestate to running
+-}
+
+
 startGame : Model -> Tetroid -> Model
 startGame model tetroid =
-    { model | upcomingTetroid = Just (spawnTetroid tetroid model.dimensions), gameState = Running }
+    { model | gameState = Running } |> flip setUpcomingTetroid tetroid
+
+
+
+-- Randomize the upcoming tetroid and places it at the center of the playing field
 
 
 setUpcomingTetroid : Model -> Tetroid -> Model
@@ -67,24 +78,27 @@ setUpcomingTetroid model tetroid =
     { model | upcomingTetroid = Just (spawnTetroid tetroid model.dimensions) }
 
 
+
+-- Checks collision for active tetroid and doing corresponding actions on each tick.
+
+
 handleTick : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 handleTick ( model, cmd ) =
-    if model.gameOver then
-        ( model, cmd )
-
-    else
-        checkForCollision ( model, cmd ) |> checkForClear
-
-
-checkForCollision : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
-checkForCollision ( model, cmd ) =
     case model.activeTetroid of
         Just tetroid ->
             if checkGridOverlap tetroid.grid model.grid then
                 ( { model | gameState = Stopped, gameOver = True }, Cmd.batch [ cmd, sounds "gameOver" ] )
 
             else if checkGridFallDownCollision tetroid.grid model.grid || isCollidingWithFloor tetroid model.dimensions then
-                ( { model | grid = mergeGrids model.grid tetroid.grid, activeTetroid = Nothing, fastFallDown = False, score = model.score + pointsBlockPlaced }, Cmd.batch [ cmd, sounds "tetroidPlaced" ] )
+                ( { model
+                    | grid = mergeGrids model.grid tetroid.grid
+                    , activeTetroid = Nothing
+                    , fastFallDown = False
+                    , score = model.score + pointsBlockPlaced
+                  }
+                , Cmd.batch [ cmd, sounds "tetroidPlaced" ]
+                )
+                    |> checkForClear
 
             else
                 ( { model | activeTetroid = Just (fallDown tetroid) }, cmd )
@@ -93,14 +107,18 @@ checkForCollision ( model, cmd ) =
             ( { model | activeTetroid = model.upcomingTetroid }, Cmd.batch [ Random.generate UpcomingTetroid tetroidGenerator, cmd ] )
 
 
+
+-- Checks whether planes can be cleared and adjusts the score.
+
+
 checkForClear : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 checkForClear ( model, cmd ) =
-    let
-        clearedGridAndCount : ( Grid, Int )
-        clearedGridAndCount =
-            clearPlanes model.grid (round <| model.dimensions.width * model.dimensions.depth) model.dimensions.height
-    in
     if model.activeTetroid == Nothing then
+        let
+            clearedGridAndCount : ( Grid, Int )
+            clearedGridAndCount =
+                clearPlanes model.grid (round <| model.dimensions.width * model.dimensions.depth) model.dimensions.height
+        in
         case clearedGridAndCount of
             ( grid, clearedPlaneCount ) ->
                 case clearedPlaneCount of
@@ -123,6 +141,10 @@ checkForClear ( model, cmd ) =
         ( model, cmd )
 
 
+
+-- Sets the highscore data received from http request
+
+
 handleScoreResponse : Result Http.Error Scores -> Model -> Model
 handleScoreResponse response model =
     case response of
@@ -131,6 +153,12 @@ handleScoreResponse response model =
 
         Ok scores ->
             { model | highscores = Loaded scores }
+
+
+
+{- Handles all the key input to control the movement and rotation of the tetroid
+   as well as restarting the game.
+-}
 
 
 handleKeyInput : Model -> Key -> ( Model, Cmd Msg )

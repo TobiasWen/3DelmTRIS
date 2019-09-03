@@ -5,7 +5,9 @@ import Random exposing (Generator, uniform)
 
 
 
--- a tetroid simply can be described as a basic grid which consists of colored cells
+{- a tetroid simply can be described as a basic grid which
+   consists of colored cells with an additional center position.
+-}
 
 
 type alias Tetroid =
@@ -15,7 +17,7 @@ type alias Tetroid =
 
 
 
--- Colors
+-- RGB Colors
 
 
 blue : Color
@@ -65,16 +67,13 @@ createTetroid color center positions =
 
 
 
-{-
-   Mixing up initialization style of Position record because elm-format creates 4 lines
-   instead of one for such a small data structure.
--}
+-- Functions to create the tetroids in the well known shapes.
 
 
 createBlueTetroid : Tetroid
 createBlueTetroid =
     createTetroid blue
-        { x = 1, y = 0, z = 0 }
+        (Position 1 0 0)
         [ Position 0 0 0
         , Position 1 0 0
         , Position 2 0 0
@@ -85,7 +84,7 @@ createBlueTetroid =
 createYellowTetroid : Tetroid
 createYellowTetroid =
     createTetroid yellow
-        { x = 0.5, y = 0.5, z = 0.5 }
+        (Position 0.5 0.5 0.5)
         [ Position 0 0 0
         , Position 0 1 0
         , Position 1 0 0
@@ -100,7 +99,7 @@ createYellowTetroid =
 createOrangeTetroid : Tetroid
 createOrangeTetroid =
     createTetroid orange
-        { x = 0, y = 1, z = 0 }
+        (Position 0 1 0)
         [ Position 0 0 0
         , Position 0 1 0
         , Position 0 2 0
@@ -111,7 +110,7 @@ createOrangeTetroid =
 createGreenTetroid : Tetroid
 createGreenTetroid =
     createTetroid green
-        { x = 0, y = 1, z = 0 }
+        (Position 0 1 0)
         [ Position 0 0 0
         , Position 0 1 0
         , Position 1 1 0
@@ -122,12 +121,16 @@ createGreenTetroid =
 createPinkTetroid : Tetroid
 createPinkTetroid =
     createTetroid pink
-        { x = 1, y = 0, z = 0 }
+        (Position 1 0 0)
         [ Position 0 0 0
         , Position 1 0 0
         , Position 2 0 0
         , Position 1 1 0
         ]
+
+
+
+-- The pool of available tetroids to randomize from.
 
 
 tetroids : List Tetroid

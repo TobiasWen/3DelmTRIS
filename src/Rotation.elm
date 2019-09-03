@@ -7,14 +7,28 @@ import Movement exposing (calculateWallKickVector, translateTetroid)
 import Tetroids exposing (Tetroid)
 
 
+
+-- A 3x3 Matrix type consisting of three vec3/positions.
+
+
 type alias Mat3 =
     ( Position, Position, Position )
+
+
+
+-- The axes to rotate a tetroid on.
 
 
 type Axis
     = X
     | Y
     | Z
+
+
+
+{- Rotation matrices to perform a 90 degre rotation on the axes
+   in euclidean space.
+-}
 
 
 xAxisRotationMatrix : Mat3
@@ -41,6 +55,12 @@ zAxisRotationMatrix =
     )
 
 
+
+{- Rotates the tetroid on the given axis with helo of
+   the corresponding rotation matrices.
+-}
+
+
 rotateTetroid : Tetroid -> Axis -> Tetroid
 rotateTetroid tetroid axis =
     case axis of
@@ -54,6 +74,10 @@ rotateTetroid tetroid axis =
             { tetroid | grid = List.map (\cell -> { cell | position = positionArithmetics (+) tetroid.center <| multiplyVecMatrix zAxisRotationMatrix <| positionArithmetics (-) cell.position tetroid.center }) tetroid.grid }
 
 
+
+-- Checks whether a tetroid is able to rotate on the given axis.
+
+
 canRotate : Tetroid -> Grid -> Axis -> WorldDimensions -> Bool
 canRotate tetroid grid axis dim =
     let
@@ -61,6 +85,10 @@ canRotate tetroid grid axis dim =
             rotateTetroid tetroid axis
     in
     not <| checkGridOverlap grid <| (translateTetroid rotatedTetroid <| calculateWallKickVector rotatedTetroid dim).grid
+
+
+
+-- Calculation for multiplying a vector with a 3x3 matrix.
 
 
 multiplyVecMatrix : Mat3 -> Position -> Position

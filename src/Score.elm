@@ -19,7 +19,7 @@ type alias Score =
 
 
 
--- Record with one field to match json object structure
+-- Record with one field to match json object structure.
 
 
 type alias Scores =
@@ -58,7 +58,7 @@ pointsBlockPlaced =
 
 
 
--- ScoreDecoder
+-- Decoders to decode the json received from the highscore api server into elm records.
 
 
 scoreDecoder : Json.Decode.Decoder Score
@@ -73,6 +73,12 @@ scoreListDecoder : Json.Decode.Decoder Scores
 scoreListDecoder =
     Json.Decode.map (\scores -> { scores = scores })
         (Json.Decode.field "scores" <| Json.Decode.list scoreDecoder)
+
+
+
+{- Encoder to encode an elm score record into a json object
+   for transmitting to the highscore api server.
+-}
 
 
 scoreEncoder : Score -> Json.Encode.Value

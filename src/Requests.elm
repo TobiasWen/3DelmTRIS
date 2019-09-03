@@ -6,12 +6,16 @@ import Score exposing (Score, scoreEncoder, scoreListDecoder)
 
 
 
--- Commands for interacting with the highscore api
+-- Commands for interacting with the highscore api.
 
 
 url : String
 url =
     "http://cloud.wentzlaff.com:23000/"
+
+
+
+-- Get request command for fetching the highscore list.
 
 
 getScoresCmd : Cmd Msg
@@ -20,6 +24,10 @@ getScoresCmd =
         { url = url
         , expect = Http.expectJson ScoreResponse scoreListDecoder
         }
+
+
+
+-- Post request command for transmitting the achieved score to the api server.
 
 
 postScoreCmd : Score -> Cmd Msg
