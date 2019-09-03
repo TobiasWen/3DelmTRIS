@@ -21,7 +21,7 @@ url =
 getScoresCmd : Cmd Msg
 getScoresCmd =
     Http.get
-        { url = url
+        { url = url ++ "scores/"
         , expect = Http.expectJson ScoreResponse scoreListDecoder
         }
 
@@ -33,7 +33,7 @@ getScoresCmd =
 postScoreCmd : Score -> Cmd Msg
 postScoreCmd score =
     Http.post
-        { url = url
+        { url = url ++ "scores/"
         , body = Http.jsonBody <| scoreEncoder score
         , expect = Http.expectJson ScoreResponse scoreListDecoder
         }
