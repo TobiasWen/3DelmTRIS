@@ -11,7 +11,7 @@ import Score exposing (Score, scoreEncoder, scoreListDecoder)
 
 url : String
 url =
-    "http://cloud.wentzlaff.com:23000/"
+    "https://cloud.wentzlaff.com/elmtris/"
 
 
 
