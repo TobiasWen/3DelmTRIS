@@ -1,7 +1,7 @@
 ![alt text](https://i.gyazo.com/c5e0bf370e6b4f7b6cc3132e5a156476.png "3DelmTRIS logo")
 3DelmTRIS is a 3D version of Tetris created with WebGL in the 0.19 release of the elm programming language. This project was created during the university course 'Functional Frontend Development' at the Flensburg University of Applied Sciences.
 
-Play 3DelmTRIS [here](http://cloud.wentzlaff.com:23000/) or download the newest pre-built version from [here](https://github.com/TobiasWen/3DelmTRIS/releases).
+Play 3DelmTRIS [here](https://tobiaswen.github.io/3DelmTRIS/) or download the newest pre-built version from [here](https://github.com/TobiasWen/3DelmTRIS/releases).
 For the best experience use a full hd screen or adjust zoom levels accordingly. A fully responsive design might be added in future releases. Currently only working on Google Chrome.
 
 ## Building from source
