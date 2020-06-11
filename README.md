@@ -6,7 +6,6 @@ For the best experience use a full hd screen or adjust zoom levels accordingly. 
 
 ## Building from source
 1. `elm make src/Tetris.elm --output=dist/main.js`
-2. `elm make src/Tetris.elm --output=dist/index.html`
 2. `cd` into dist folder
 3. open index.html
 
